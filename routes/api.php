@@ -17,13 +17,13 @@ use App\Http\Controllers\Api\ChangeController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::post('register', 'App\Http\Controllers\Api\AuthController@register')->name('auth.register');//->middleware('IsAdmin');
+Route::post('login', 'App\Http\Controllers\Api\AuthController@login')->name('auth.login');
 
 Route::post('accesstoken', 'App\Http\Controllers\Api\AccessTokenController@store')->name('auth.token');
 Route::group(['middleware' => ['auth:sanctum']], function (){
     Route::apiResource('sites', SiteController::class);
     Route::apiResource('pages', PageController::class);
     Route::apiResource('changes', ChangeController::class);
+    Route::post('register', 'App\Http\Controllers\Api\AuthController@register')->name('auth.register')->middleware('IsAdmin');
 });
 
