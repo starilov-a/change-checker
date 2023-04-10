@@ -14,10 +14,15 @@ class Page extends Model
         'updated_at',
     ];
 
+    protected $fillable = ['site_id', 'url', 'size', 'created_at'];
     /**
      * Связь `pages` с таблицей `sites`
      */
     public function sites() {
         return $this->belongsTo(Site::class);
+    }
+
+    public function addPage($param) {
+        return $this->create($param);
     }
 }

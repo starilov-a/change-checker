@@ -1,19 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Models\Change;
+use App\Http\Resources\ChangeResource;
 use Illuminate\Http\Request;
 
-class SiteController extends Controller
+class ChangeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $requset)
     {
+        $start = $requset->input('start', 0);
+        $limit = $requset->input('limit', 100);
 
+        return ChangeResource::collection(Change::skip($start)->take($limit)->get());
     }
 
     /**
@@ -24,19 +30,16 @@ class SiteController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
-            ''
-        ];
-        dd('123');
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Change  $change
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Change $change)
     {
         //
     }
@@ -45,10 +48,10 @@ class SiteController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Change  $change
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Change $change)
     {
         //
     }
@@ -56,10 +59,10 @@ class SiteController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Change  $change
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Change $change)
     {
         //
     }

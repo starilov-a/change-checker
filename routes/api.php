@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\SiteController;
+use App\Http\Controllers\Api\SiteController;
+use App\Http\Controllers\Api\PageController;
+use App\Http\Controllers\Api\ChangeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,8 +18,11 @@ use App\Http\Controllers\SiteController;
 |
 */
 
-Route::post('/addsite',[SiteController::class, 'store']);
-Route::post('/getsite',[SiteController::class, 'show']);
-Route::post('/getsitelist',[SiteController::class, 'index']);
-Route::post('/removesite',[SiteController::class, 'destroy']);
-Route::post('/updatesite',[SiteController::class, 'update']);
+
+Route::post('accesstoken', 'App\Http\Controllers\Api\AccessTokenController@store')->name('auth.token');
+Route::group(['middleware' => ['auth:sanctum']], function (){
+    Route::apiResource('sites', SiteController::class);
+    Route::apiResource('pages', PageController::class);
+    Route::apiResource('changes', ChangeController::class);
+});
+

@@ -18,6 +18,7 @@ class CreateChangesTable extends Migration
             $table->unsignedBigInteger('site_id');
             $table->foreign('site_id')->references('id')->on('sites')->onDelete('cascade');
             $table->string('url');
+            $table->boolean('check')->default(true);
             $table->timestamps();
         });
     }

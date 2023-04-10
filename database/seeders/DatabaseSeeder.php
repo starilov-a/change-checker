@@ -15,5 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(SiteTableSeeder::class);
         $this->command->info('Таблица сайтов загружена данными!');
+        $this->call(PageTableSeeder::class);
+        $this->command->info('Таблица страниц загружена данными!');
     }
 }

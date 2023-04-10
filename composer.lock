@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c61ff82cbf0142a401a48a8161e1595a",
+    "content-hash": "af1ac19973dc259e424b5056c8c5ca93",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -420,6 +420,58 @@
                 }
             ],
             "time": "2022-09-10T18:51:20+00:00"
+        },
+        {
+            "name": "drnxloc/laravel-simple-html-dom",
+            "version": "1.9.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/drnxloc/laravel-simple-html-dom.git",
+                "reference": "1985c03754f747b7ef6da9afc90c97c86674f5ce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/drnxloc/laravel-simple-html-dom/zipball/1985c03754f747b7ef6da9afc90c97c86674f5ce",
+                "reference": "1985c03754f747b7ef6da9afc90c97c86674f5ce",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=5.3.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Drnxloc\\LaravelHtmlDom\\HtmlDomParser": "Src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "S.C. Chen",
+                    "homepage": "http://sourceforge.net/projects/simplehtmldom/"
+                },
+                {
+                    "name": "Drnxloc",
+                    "email": "admin@drnxloc.com",
+                    "homepage": "https://github.com/Drnxloc-Dev"
+                }
+            ],
+            "description": "Composer adaptation of: A HTML DOM parser written in PHP5+ let you manipulate HTML in a very easy way! Require PHP 5+. Supports invalid HTML. Find tags on an HTML page with selectors just like jQuery. Extract contents from HTML in a single line.",
+            "homepage": "https://github.com/Drnxloc-Dev/laravel-simple-html-dom",
+            "keywords": [
+                "dom",
+                "html",
+                "parser"
+            ],
+            "support": {
+                "issues": "https://github.com/drnxloc/laravel-simple-html-dom/issues",
+                "source": "https://github.com/drnxloc/laravel-simple-html-dom/tree/1.9.1"
+            },
+            "time": "2021-04-18T11:17:38+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -961,6 +1013,58 @@
                 }
             ],
             "time": "2023-03-09T13:19:02+00:00"
+        },
+        {
+            "name": "imangazaliev/didom",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Imangazaliev/DiDOM.git",
+                "reference": "50fa6595d14f22c0c984efed5c818485cf548136"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Imangazaliev/DiDOM/zipball/50fa6595d14f22c0c984efed5c818485cf548136",
+                "reference": "50fa6595d14f22c0c984efed5c818485cf548136",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-iconv": "*",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DiDom\\": "src/DiDom/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Imangazaliev Muhammad",
+                    "email": "imangazalievm@gmail.com"
+                }
+            ],
+            "description": "Simple and fast HTML parser",
+            "homepage": "https://github.com/Imangazaliev/DiDOM",
+            "keywords": [
+                "didom",
+                "html",
+                "parser",
+                "xml"
+            ],
+            "support": {
+                "issues": "https://github.com/Imangazaliev/DiDOM/issues",
+                "source": "https://github.com/Imangazaliev/DiDOM/tree/2.0.1"
+            },
+            "time": "2023-03-05T03:23:48+00:00"
         },
         {
             "name": "laravel/framework",
