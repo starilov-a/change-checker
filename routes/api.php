@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\ChangeController;
 |
 */
 
+Route::post('register', 'App\Http\Controllers\Api\AuthController@register')->name('auth.register');//->middleware('IsAdmin');
 
 Route::post('accesstoken', 'App\Http\Controllers\Api\AccessTokenController@store')->name('auth.token');
 Route::group(['middleware' => ['auth:sanctum']], function (){

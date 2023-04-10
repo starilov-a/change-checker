@@ -11,7 +11,7 @@ class AccessTokenController extends Controller
     public function store(\App\Http\Requests\AuthLoginRequest $request) {
         $data = $request->validated();
 
-        $user = User::where('name', $data['login'])->first();
+        $user = User::where('login', $data['login'])->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
             return response('Не удалось авторизоваться', '422');

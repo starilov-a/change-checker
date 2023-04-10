@@ -22,10 +22,10 @@ class AuthRegisterRequest extends ValidateRequest
     public function rules()
     {
         return [
-            'login' => 'required',
+            'login' => 'required|max:255',
             'password' => 'required',
-            'email' => 'required',
-            'role' => 'required'
+            'email' => 'required|unique:users',
+            'role' => 'required|integer'
         ];
     }
 }
