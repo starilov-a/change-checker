@@ -2,30 +2,30 @@
 
 namespace App\Jobs;
 
-use App\Services\ParserService;
+use App\Models\Change;
+use App\Models\Site;
+use App\Notifications\FindChangeNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
-class ScanSiteAllJob implements ShouldQueue
+class ChangeNotificateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function uniqueId()
-    {
-        return $this->parser->siteUrl;
-    }
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(ParserService $parser)
+    public function __construct()
     {
-        $this->parser = $parser;
+        //
     }
 
     /**
@@ -35,6 +35,10 @@ class ScanSiteAllJob implements ShouldQueue
      */
     public function handle()
     {
-        //
+        $ChangedSites = Change::changedSites();
+        if (!empty($ChangedSites)) {
+            $notify = new FindChangeNotification($ChangedSites);
+            $notify->sendMail();
+        }
     }
 }

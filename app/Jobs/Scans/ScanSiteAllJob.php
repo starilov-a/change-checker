@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Scans;
 
 use App\Models\Site;
+use App\Services\ParserService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use \App\Services\ParserService;
 
-
-class ParseSiteJob implements ShouldQueue, ShouldBeUnique
+class ScanSiteAllJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $parser;
-    public $timeout = 1000;
+    public $timeout = 1200;
 
     /**
      * Create a new job instance.
@@ -38,7 +37,7 @@ class ParseSiteJob implements ShouldQueue, ShouldBeUnique
     {
         $title = $this->parser->getSiteTitle();
         \Illuminate\Support\Facades\Log::debug($title);
-        //Site::create(['title' => $title, 'url' => $this->parser->siteUrl]);
-        //$pages = $this->parser->getSitePages();
+        Site::create(['title' => $title, 'url' => $this->parser->siteUrl]);
+        $pages = $this->parser->getSitePages();
     }
 }

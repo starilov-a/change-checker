@@ -35,7 +35,7 @@ class SiteController extends Controller
     {
         $urls = $request->validated()['urls'];
         $addSiteAction->addSites($urls);
-        return response('Запрос на парсинг сайтов создан', \Illuminate\Http\Response::HTTP_OK);
+        return response(['data' => ['message' => 'Запрос на парсинг сайтов создан']], \Illuminate\Http\Response::HTTP_OK);
     }
 
     /**

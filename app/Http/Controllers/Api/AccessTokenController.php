@@ -14,7 +14,7 @@ class AccessTokenController extends Controller
         $user = User::where('login', $data['login'])->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            return response('Не удалось авторизоваться', '422');
+            return response(['message' => 'Не удалось авторизоваться'], '422');
         }
 
         return ['token' => $user->createToken($data['login'])->plainTextToken];

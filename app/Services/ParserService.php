@@ -84,7 +84,7 @@ class ParserService
     protected function searchTitle() {
         $response = $this->http::get($this->siteUrl);
         $dom = HtmlDomParser::str_get_html($response->body());
-        $title = $dom->find('title')[0]->plaintext;
+        $title = $dom->find('title')[0]->plaintext ?? $this->siteUrl;
         return $title;
     }
 

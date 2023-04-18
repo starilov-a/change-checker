@@ -2,8 +2,10 @@
 
 namespace App\Console;
 
+use App\Actions\ScanSiteAction;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,7 +17,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            $action = new ScanSiteAction;
+            $action->scanSite();
+        })->everyFourHours();
     }
 
     /**

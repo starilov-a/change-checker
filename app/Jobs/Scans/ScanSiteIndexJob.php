@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Scans;
 
 use App\Models\Page;
 use App\Models\Site;
 use App\Models\User;
-use App\Notifications\FindChange;
+use App\Notifications\FindChangeNotification;
 use App\Services\ParserService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -18,7 +18,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ScanSiteMainJob implements ShouldQueue
+class ScanSiteIndexJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -36,7 +36,6 @@ class ScanSiteMainJob implements ShouldQueue
      */
     public function __construct(ParserService $parser, $site)
     {
-        Log::debug($site);
         $this->parser = $parser;
         $this->site = $site;
     }
@@ -48,7 +47,7 @@ class ScanSiteMainJob implements ShouldQueue
      */
     public function handle()
     {
-        $mainPage = Page::where('url', '/')->where('site_id', $this->site->id)->first();
+        $mainPage = Page::where('url','=', '/')->where('site_id', '=', $this->site->id)->first();
         //получить вес страницы
         $size = $mainPage->size;
         //сделать запрос и получить еще один вес страницы
@@ -56,10 +55,8 @@ class ScanSiteMainJob implements ShouldQueue
         //сравнить
         Log::debug($size);Log::debug($newSize);
         if ($size != $newSize) {
-            //запись в таблицы
-            $this->site->check = false;
-            $this->site->save();
 
+            //запись в таблицы
             $mainPage->size = $newSize;
             $mainPage->save();
 
@@ -68,11 +65,6 @@ class ScanSiteMainJob implements ShouldQueue
                 'url' => '/',
                 'created_at' => Carbon::now()
             ]);
-            //notificate
-
-            Notification::send(User::where('name', 'admin')->first(), new FindChange($this->site));
         }
-
-
     }
 }

@@ -18,7 +18,7 @@ class ChangeResource extends JsonResource
             'id' => $this->id,
             'site_id' => $this->site_id,
             'url' => $this->url,
-            'check' => $this->check,
+            'checked' => $this->checked,
         ];
     }
 }

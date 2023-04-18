@@ -14,10 +14,25 @@ class Change extends Model
         'updated_at',
     ];
 
+    protected $fillable = ['checked'];
+
+    /**
+     * Получение всех site в которых есть изменения
+     */
+    static function changedSites() {
+        $changesBySite = Change::with('sites')->where('checked', '=', '0')->groupBy('site_id')->get();
+
+        $sites = [];
+        foreach ($changesBySite as $change)
+            $sites[] = $change->sites;
+
+        return $sites;
+    }
+
     /**
      * Связь `changes` с таблицей `sites`
      */
     public function sites() {
-        return $this->belongsTo(Site::class);
+        return $this->belongsTo(Site::class, 'site_id');
     }
 }

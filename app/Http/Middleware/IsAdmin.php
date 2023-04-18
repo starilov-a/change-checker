@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
@@ -22,7 +21,7 @@ class IsAdmin
 
         if (empty($user) && $user->role !== 1) {
             throw new AuthenticationException(
-                'Unauthenticated.'
+                'Only Admin.'
             );
         }
 

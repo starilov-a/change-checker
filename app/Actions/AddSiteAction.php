@@ -13,7 +13,7 @@ class AddSiteAction implements AddSiteContract
 {
     public function addSites($urls) {
         foreach ($urls as $url) {
-            AddSiteJob::dispatch(new ParserService($url))->onQueue('sites');
+            AddSiteJob::dispatch(new ParserService($url));
         }
     }
 }

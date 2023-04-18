@@ -14,10 +14,11 @@ class AuthResource extends JsonResource
      */
     public function toArray($request)
     {
+        //var_dump('123');exit;
         return [
             'login' => $this->login,
             'email' => $this->email,
-            'role' => $this->url
+            'role' => $this->role
         ];
     }
 }

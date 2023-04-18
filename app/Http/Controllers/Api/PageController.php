@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PageResource;
+use App\Http\Resources\SiteResource;
 use App\Models\Page;
 use Illuminate\Http\Request;
 
@@ -13,9 +15,11 @@ class PageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $requset)
+    public function index(\App\Http\Requests\ListRequest $request)
     {
-
+        $start = $request->input('start', 0);
+        $limit = $request->input('limit', 20);
+        return PageResource::collection(Page::where('site_id', '=' , $request->id)->skip($start)->take($limit)->get());
     }
 
     /**
@@ -47,9 +51,10 @@ class PageController extends Controller
      * @param  \App\Models\Page  $page
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Page $page)
+    public function update(\App\Http\Requests\PageUpdateRequest  $request, Page $page)
     {
-        //
+        $page->update($request->validated());
+        return response(null, \Illuminate\Http\Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -60,6 +65,7 @@ class PageController extends Controller
      */
     public function destroy(Page $page)
     {
-        //
+        $page->delete();
+        return response(null, \Illuminate\Http\Response::HTTP_NO_CONTENT);
     }
 }

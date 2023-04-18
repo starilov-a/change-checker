@@ -14,12 +14,14 @@ class ChangeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $requset)
+    public function index(\App\Http\Requests\ListRequest $request)
     {
-        $start = $requset->input('start', 0);
-        $limit = $requset->input('limit', 100);
+        $request->validated();
 
-        return ChangeResource::collection(Change::skip($start)->take($limit)->get());
+        $start = $request->input('start', 0);
+        $limit = $request->input('limit', 100);
+
+        return ChangeResource::collection(Change::where('id', '=' , $request->id)->skip($start)->take($limit)->get());
     }
 
     /**
