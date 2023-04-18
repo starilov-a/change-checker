@@ -60,7 +60,6 @@ class AddSiteJob implements ShouldQueue, ShouldBeUnique
                     'site_id' => $site->id,
                     'url' => $path,
                     'size' => $size,
-                    'checked' => true,
                     'created_at' => Carbon::now()
                 ];
             }
