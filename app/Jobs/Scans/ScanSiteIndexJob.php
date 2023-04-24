@@ -42,6 +42,10 @@ class ScanSiteIndexJob implements ShouldQueue
     public function handle()
     {
         $mainPage = Page::where('url','=', '/')->where('site_id', '=', $this->site->id)->first();
+
+        //TODO сделать поиск страницы либо исключить отсутствия страниц
+        if ($mainPage === null)
+            exit;
         //получить вес страницы
         $size = $mainPage->size;
         //сделать запрос и получить еще один вес страницы
