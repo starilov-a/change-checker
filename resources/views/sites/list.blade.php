@@ -18,11 +18,11 @@
     <table class="table table-striped table-sm">
         <thead>
         <tr>
-            <th scope="col">id</th>
+            <th scope="col">Id</th>
             <th scope="col">Название</th>
-            <th scope="col">url</th>
+            <th scope="col">Url</th>
             <th scope="col">Кол-во страниц</th>
-            <th scope="col">дата добавления</th>
+            <th scope="col">Дата добавления</th>
         </tr>
         </thead>
         <tbody>
