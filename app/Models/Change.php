@@ -14,7 +14,7 @@ class Change extends Model
         'updated_at',
     ];
 
-    protected $fillable = ['checked'];
+    protected $fillable = ['checked', 'url'];
 
     /**
      * Получение всех site в которых есть изменения

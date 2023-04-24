@@ -2,20 +2,14 @@
 
 namespace App\Jobs\Scans;
 
+use App\Models\Change;
 use App\Models\Page;
-use App\Models\Site;
-use App\Models\User;
-use App\Notifications\FindChangeNotification;
 use App\Services\ParserService;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ScanSiteIndexJob implements ShouldQueue
@@ -53,17 +47,17 @@ class ScanSiteIndexJob implements ShouldQueue
         //сделать запрос и получить еще один вес страницы
         $newSize = $this->parser->getSizePage($mainPage->url);
         //сравнить
-        Log::debug($size);Log::debug($newSize);
         if ($size != $newSize) {
 
             //запись в таблицы
             $mainPage->size = $newSize;
             $mainPage->save();
 
-            DB::table('changes')->insert([
+            $this->site->changes()->updateOrCreate([
                 'site_id' => $this->site->id,
-                'url' => '/',
-                'created_at' => Carbon::now()
+                'url' => '/'
+            ],[
+                'checked' => true
             ]);
         }
     }
