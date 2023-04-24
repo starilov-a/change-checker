@@ -12,7 +12,7 @@
             </button>
         </div>
     </div>
-    <h2>Зафиксированные изменения</h2>
+    <h2>Зафиксированные изменения - {{ $countChanges }}</h2>
     <div class="table-responsive">
         {{ $changes->links()}}
         <table class="table table-striped table-sm">

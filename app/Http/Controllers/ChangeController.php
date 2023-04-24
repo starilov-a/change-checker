@@ -15,8 +15,9 @@ class ChangeController extends Controller
     public function index()
     {
         $changes = Change::with('sites')->paginate(20);
+        $countChanges = Change::all()->count();
 
-        return view('changes.list', compact('changes'));
+        return view('changes.list', compact('changes', 'countChanges'));
     }
 
     /**

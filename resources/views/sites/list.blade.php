@@ -12,7 +12,7 @@
         </button>
     </div>
 </div>
-<h2>Отслеживаемые сайты</h2>
+<h2>Отслеживаемые сайты - {{ $countSites }}</h2>
 <div class="table-responsive">
     {{ $sites->links()}}
     <table class="table table-striped table-sm">

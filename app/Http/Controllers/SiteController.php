@@ -14,9 +14,10 @@ class SiteController extends Controller
      */
     public function index()
     {
-        $sites = Site::paginate(20);
+        $sites = Site::paginate(2);
+        $countSites = Site::all()->count();
 
-        return view('sites.list', compact('sites'));
+        return view('sites.list', compact('sites', 'countSites'));
     }
 
     /**
