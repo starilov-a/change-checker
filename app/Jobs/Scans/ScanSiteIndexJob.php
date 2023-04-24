@@ -2,7 +2,6 @@
 
 namespace App\Jobs\Scans;
 
-use App\Models\Change;
 use App\Models\Page;
 use App\Services\ParserService;
 use Illuminate\Bus\Queueable;
@@ -10,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class ScanSiteIndexJob implements ShouldQueue
 {
@@ -45,7 +43,7 @@ class ScanSiteIndexJob implements ShouldQueue
 
         //TODO сделать поиск страницы либо исключить отсутствия страниц
         if ($mainPage === null)
-            exit;
+            return false;
         //получить вес страницы
         $size = $mainPage->size;
         //сделать запрос и получить еще один вес страницы

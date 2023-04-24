@@ -3,18 +3,26 @@
 namespace App\Services;
 
 use Drnxloc\LaravelHtmlDom\HtmlDomParser;
-use Illuminate\Support\Facades\Http;
 
 class ParserService
 {
-    protected $http;
+    protected $ch;
+    protected $response;
     protected $fullSearch = false;
     public $siteUrl;
 
     public function __construct($url) {
         //TODO Проверять только корневой путь
         $this->siteUrl = rtrim($url,'/');
-        $this->http = new Http();
+        $this->ch = curl_init();
+
+        curl_setopt($this->ch, CURLOPT_URL, $url);
+        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($this->ch, CURLOPT_HEADER, 0);
+        curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
+
+        $this->response = curl_exec($this->ch);
     }
 
     public function getSitePages() {
@@ -28,32 +36,32 @@ class ParserService
         return $this->searchTitle();
     }
 
+    public function isError() {
+        //TODO Доделать логи ошибок
+        if ($this->response == false)
+            return true;
+        return false;
+    }
+
     public function getSizePage($path, $response = null) {
         $size = 0;
         $newRespon = false;
-
         if (!isset($response)){
-            $response = $this->http::head($this->siteUrl.$path);
-            $newRespon = true;
+            curl_setopt($this->ch, CURLOPT_URL, $this->siteUrl.$path);
+            $response = curl_exec($this->ch);
         }
 
-        $headers = $response->headers();
-        if (isset($headers['Content-Length'][0])) {
-            $size = $headers['Content-Length'][0];
-        } else {
-            if ($newRespon)
-                $response = $this->http::get($this->siteUrl.$path);
-            $size = strlen($response->body());
-        }
+        $size = strlen($response);
         return $size;
     }
 
     protected function searchLinkPage($path, $pageUrls) {
-        $response = $this->http::get($this->siteUrl.$path);
+        curl_setopt($this->ch, CURLOPT_URL, $this->siteUrl.$path);
+        $response = curl_exec($this->ch);
         $pageUrls[$path] = $this->getSizePage($path, $response);
 
         if($this->fullSearch) {
-            $dom = HtmlDomParser::str_get_html($response->body());
+            $dom = HtmlDomParser::str_get_html($response);
             $paths = $this->formatterLinks($dom->find('a'));
 
             foreach ($paths as $path) {
@@ -82,11 +90,14 @@ class ParserService
     }
 
     protected function searchTitle() {
-        $response = $this->http::get($this->siteUrl);
-        $dom = HtmlDomParser::str_get_html($response->body());
-        $title = $dom->find('title')[0]->plaintext;
-        if(empty($title))
+        $dom = HtmlDomParser::str_get_html($this->response);
+
+        $titlesArr = $dom->find('title');
+        if (!empty($titlesArr))
+            $title = $titlesArr[0]->plaintext;
+        else
             $title = $this->siteUrl;
+
         return $title;
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\Page;
 use App\Models\Site;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -20,22 +19,22 @@ class AddSiteJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $parser;
+    protected $url;
     public $timeout = 1000;
 
 
     public function uniqueId()
     {
-        return $this->parser->siteUrl;
+        return $this->url;
     }
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(ParserService $parser)
+    public function __construct($url)
     {
-        $this->parser = $parser;
+        $this->url = $url;
     }
 
     /**
@@ -45,25 +44,28 @@ class AddSiteJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle()
     {
-        if(empty(Site::where('url', $this->parser->siteUrl)->first())) {
-            $title = $this->parser->getSiteTitle();
-            $site = Site::create(['name' => $title, 'url' => $this->parser->siteUrl]);
+        if(empty(Site::where('url', $this->url)->first())) {
+            $parser = new ParserService($this->url);
+            if(!$parser->isError()) {
+                $title = $parser->getSiteTitle();
+                $site = Site::create(['name' => $title, 'url' => $this->url]);
 
-            $insertArr = [];
-            $pages = $this->parser->getSitePages();
+                $insertArr = [];
+                $pages = $parser->getSitePages();
 
-            $site->page_count = count($pages);
-            $site->save();
+                $site->page_count = count($pages);
+                $site->save();
 
-            foreach ($pages as $path => $size) {
-                $insertArr[] = [
-                    'site_id' => $site->id,
-                    'url' => $path,
-                    'size' => $size,
-                    'created_at' => Carbon::now()
-                ];
+                foreach ($pages as $path => $size) {
+                    $insertArr[] = [
+                        'site_id' => $site->id,
+                        'url' => $path,
+                        'size' => $size,
+                        'created_at' => Carbon::now()
+                    ];
+                }
+                DB::table('pages')->insert($insertArr);
             }
-            DB::table('pages')->insert($insertArr);
         }
     }
 }

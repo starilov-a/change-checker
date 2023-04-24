@@ -5,7 +5,6 @@ namespace App\Jobs\Scans;
 use App\Models\Site;
 use App\Services\ParserService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -36,7 +35,6 @@ class ScanSiteAllJob implements ShouldQueue
     public function handle()
     {
         $title = $this->parser->getSiteTitle();
-        \Illuminate\Support\Facades\Log::debug($title);
         Site::create(['title' => $title, 'url' => $this->parser->siteUrl]);
         $pages = $this->parser->getSitePages();
     }
