@@ -23,6 +23,7 @@
             <th scope="col">Url</th>
             <th scope="col">Кол-во страниц</th>
             <th scope="col">Дата добавления</th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
@@ -37,6 +38,10 @@
                 <td><a href="{{ $site->url }}">{{ $site->url }}</a></td>
                 <td>{{ $site->page_count }}</td>
                 <td>{{ $site->created_at }}</td>
+                <td><form action="/sites/{{ $site->id }}" method="delete">
+                        <input type="submit" class="btn btn-danger" value="Удалить">
+                    </form>
+                </td>
             </tr>
         @endforeach
         </tbody>
