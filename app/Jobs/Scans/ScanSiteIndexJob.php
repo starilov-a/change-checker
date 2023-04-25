@@ -14,21 +14,19 @@ class ScanSiteIndexJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $parser;
     protected $site;
 
     public function uniqueId()
     {
-        return $this->parser->siteUrl;
+        return $this->site->url;
     }
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(ParserService $parser, $site)
+    public function __construct($site)
     {
-        $this->parser = $parser;
         $this->site = $site;
     }
 
@@ -39,6 +37,7 @@ class ScanSiteIndexJob implements ShouldQueue
      */
     public function handle()
     {
+        $parser = new ParserService($this->site->url);
         $mainPage = Page::where('url','=', '/')->where('site_id', '=', $this->site->id)->first();
 
         //TODO сделать поиск страницы либо исключить отсутствия страниц
@@ -47,7 +46,7 @@ class ScanSiteIndexJob implements ShouldQueue
         //получить вес страницы
         $size = $mainPage->size;
         //сделать запрос и получить еще один вес страницы
-        $newSize = $this->parser->getSizePage($mainPage->url);
+        $newSize = $parser->getSizePage($mainPage->url);
         //сравнить
         if ($size != $newSize) {
 

@@ -22,7 +22,7 @@ class ScanSiteAction
 
         foreach ($sites as $site){
             //TODO изменить на ScanSiteAllJob
-            ScanSiteIndexJob::dispatch(new ParserService($site->url), $site)->onQueue('scan');
+            ScanSiteIndexJob::dispatch($site)->onQueue('scan');
         }
     }
 }

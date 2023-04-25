@@ -3,10 +3,19 @@
 namespace App\Services;
 
 use Drnxloc\LaravelHtmlDom\HtmlDomParser;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\TransferException;
+use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class ParserService
 {
-    protected $ch;
+
+    use SerializesModels;
+
+    protected $client;
     protected $response;
     protected $fullSearch = false;
     public $siteUrl;
@@ -14,16 +23,20 @@ class ParserService
     public function __construct($url) {
         //TODO Проверять только корневой путь
         $this->siteUrl = rtrim($url,'/');
-        $this->ch = curl_init();
-
-        curl_setopt($this->ch, CURLOPT_URL, $url);
-        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($this->ch, CURLOPT_HEADER, 0);
-        curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
-
-        $this->response = curl_exec($this->ch);
+        $this->client = new Client(['base_uri' => $this->siteUrl, 'verify' => false]);
+        $this->doRequest();
     }
+
+    public function doRequest($path = '', $method = 'GET') {
+        try {
+            $this->response = mb_convert_encoding($this->client->request($method)->getBody(), "UTF8");;
+        } catch (TransferException $e) {
+            $this->response = false;
+        }
+        return $this->response;
+    }
+
+
 
     public function getSitePages() {
         $pages = [];
@@ -47,8 +60,7 @@ class ParserService
         $size = 0;
         $newRespon = false;
         if (!isset($response)){
-            curl_setopt($this->ch, CURLOPT_URL, $this->siteUrl.$path);
-            $response = curl_exec($this->ch);
+            $this->doRequest($path);
         }
 
         $size = strlen($response);
@@ -56,11 +68,11 @@ class ParserService
     }
 
     protected function searchLinkPage($path, $pageUrls) {
-        curl_setopt($this->ch, CURLOPT_URL, $this->siteUrl.$path);
-        $response = curl_exec($this->ch);
+        $response = $this->doRequest($path);
         $pageUrls[$path] = $this->getSizePage($path, $response);
 
         if($this->fullSearch) {
+            //TODO поменять на preg
             $dom = HtmlDomParser::str_get_html($response);
             $paths = $this->formatterLinks($dom->find('a'));
 
@@ -90,11 +102,10 @@ class ParserService
     }
 
     protected function searchTitle() {
-        $dom = HtmlDomParser::str_get_html($this->response);
+        preg_match('/<title[^>]*?>(.*?)<\/title>/si', $this->response, $matches);
 
-        $titlesArr = $dom->find('title');
-        if (!empty($titlesArr))
-            $title = $titlesArr[0]->plaintext;
+        if (!empty($matches))
+            $title = $matches[1];
         else
             $title = $this->siteUrl;
 
