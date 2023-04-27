@@ -26,8 +26,9 @@ class ParserService
 
     public function doRequest($path = '', $method = 'GET') {
         //TODO log ошибок
+        $this->response = '';
         try {
-            $this->response = mb_convert_encoding($this->client->request($method)->getBody(), "UTF8");;
+            $this->response = mb_convert_encoding($this->client->request($method)->getBody(), "UTF8");
         } catch (TransferException $e) {
             $this->response = false;
         }

@@ -14,12 +14,12 @@ class ScanSiteAction implements ScanSiteContract
     public function scanSites($siteId = false)
     {
         if ($siteId !== false)
-            $sites[] = Site::where($siteId)->get();
+            $sites = collect(Site::where("id", "=", $siteId)->get());
         else
             $sites = Site::all();
 
         foreach ($sites as $site){
-            //TODO изменить на ScanSiteAllJob
+            //TODO изменить на ScanSiteJob
             ScanSiteIndexJob::dispatch($site)->onQueue('scan');
         }
     }
