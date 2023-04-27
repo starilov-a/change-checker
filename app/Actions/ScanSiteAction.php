@@ -4,18 +4,16 @@
 namespace App\Actions;
 
 
-use App\Jobs\ChangeNotificateJob;
+use App\Contracts\ScanSiteContract;
 use App\Jobs\Scans\ScanSiteIndexJob;
 use App\Models\Site;
-use App\Services\ParserService;
-use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
-class ScanSiteAction
+
+class ScanSiteAction implements ScanSiteContract
 {
-    public function scanSite($siteId = null) {
-        if (!empty($siteId))
+    public function scanSites($siteId = false)
+    {
+        if ($siteId !== false)
             $sites[] = Site::where($siteId)->get();
         else
             $sites = Site::all();
@@ -25,4 +23,6 @@ class ScanSiteAction
             ScanSiteIndexJob::dispatch($site)->onQueue('scan');
         }
     }
+
+
 }

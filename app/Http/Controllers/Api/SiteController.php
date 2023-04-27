@@ -31,11 +31,11 @@ class SiteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(\App\Http\Requests\SiteStoreRequest $request, AddSiteContract $addSiteAction)
+    public function store(\App\Http\Requests\SiteStoreRequest $request, AddSiteContract $action)
     {
         $urls = $request->validated()['urls'];
-        $addSiteAction->addSites($urls);
-        return response(['data' => ['message' => 'Запрос на парсинг сайтов создан']], \Illuminate\Http\Response::HTTP_OK);
+        $action->addSites($urls);
+        return response(['data' => ['message' => 'Запрос на добавление и парсинг сайтов создан']], \Illuminate\Http\Response::HTTP_OK);
     }
 
     /**
@@ -73,5 +73,13 @@ class SiteController extends Controller
     {
         $site->delete();
         return response(null, \Illuminate\Http\Response::HTTP_NO_CONTENT);
+    }
+
+    public function scan(\App\Http\Requests\ScanSiteRequest $request, \App\Contracts\ScanSiteContract $action)
+    {
+        $id = $request->input('id', false);
+        $action->scanSites($id);
+
+        return response(['data' => ['message' => 'Запрос на парсинг сайтов создан']], \Illuminate\Http\Response::HTTP_OK);
     }
 }

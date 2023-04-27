@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\ScanSiteAction;
+use App\Contracts\ScanSiteContract;
 use Illuminate\Console\Command;
 
 class ScanSitesCommand extends Command
@@ -36,8 +36,8 @@ class ScanSitesCommand extends Command
      *
      * @return int
      */
-    public function handle(ScanSiteAction $action)
+    public function handle(ScanSiteContract $action)
     {
-        $action->scanSite();
+        $action->scanSites();
     }
 }

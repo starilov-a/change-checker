@@ -20,8 +20,14 @@ class ChangeController extends Controller
 
         $start = $request->input('start', 0);
         $limit = $request->input('limit', 100);
+        $id = $request->input('site_id', false);
 
-        return ChangeResource::collection(Change::where('id', '=' , $request->id)->skip($start)->take($limit)->get());
+        $changes = Change::skip($start)->take($limit);
+
+        if ($id !== false)
+            $changes = $changes->where('site_id', '=' , $id);
+
+        return ChangeResource::collection($changes->get());
     }
 
     /**

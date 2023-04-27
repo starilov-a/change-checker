@@ -35,7 +35,7 @@
                         echo (mb_strlen($site->name) > 60 ? mb_substr($site->name, 0, 60)."..." : $site->name);
                     @endphp
                 </td>
-                <td><a href="{{ $site->url }}">{{ $site->url }}</a></td>
+                <td><a href="{{ $site->url }}" target="_blank">{{ $site->url }}</a></td>
                 <td>{{ $site->page_count }}</td>
                 <td>{{ $site->created_at }}</td>
                 <td><form action="/sites/{{ $site->id }}" method="delete">

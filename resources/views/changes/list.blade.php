@@ -30,11 +30,11 @@
                 <tr>
                     <td>{{ $change->id }}</td>
                     <td title="{{$change->sites->name}}">
-                        <a href="{{ $change->sites->url }}">
+                        <a href="{{ $change->sites->url }}" target="_blank">
                             {{ $change->sites->url }}
                         </a>
                     </td>
-                    <td><a href="{{ $change->sites->url }}{{ $change->url }}">{{ $change->url }}</a></td>
+                    <td><a href="{{ $change->sites->url }}{{ $change->url }}" target="_blank">{{ $change->url }}</a></td>
                     <td>{{ $change->checked }}</td>
                     <td>{{ $change->created_at }}</td>
                 </tr>

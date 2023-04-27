@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ListRequest extends ValidateRequest
+class ScanSiteRequest extends ValidateRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,7 @@ class ListRequest extends ValidateRequest
     public function rules()
     {
         return [
-            'site_id' => 'int',
-            'start' => 'int',
-            'limit' => 'int'
+            'id' => 'int'
         ];
     }
 }

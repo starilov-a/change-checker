@@ -5,9 +5,6 @@ namespace App\Services;
 use Drnxloc\LaravelHtmlDom\HtmlDomParser;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
-use Illuminate\Bus\Queueable;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 class ParserService
@@ -28,6 +25,7 @@ class ParserService
     }
 
     public function doRequest($path = '', $method = 'GET') {
+        //TODO log ошибок
         try {
             $this->response = mb_convert_encoding($this->client->request($method)->getBody(), "UTF8");;
         } catch (TransferException $e) {
