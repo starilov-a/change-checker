@@ -56,20 +56,19 @@ class ParserService
         return false;
     }
 
-    public function getSizePage($path, $response = null) {
+    public function getSizePage($path) {
         $size = 0;
-        $newRespon = false;
-        if (!isset($response)){
+        if (!isset($this->response)){
             $this->doRequest($path);
         }
 
-        $size = strlen($response);
+        $size = strlen($this->response);
         return $size;
     }
 
     protected function searchLinkPage($path, $pageUrls) {
         $response = $this->doRequest($path);
-        $pageUrls[$path] = $this->getSizePage($path, $response);
+        $pageUrls[$path] = $this->getSizePage($path);
 
         if($this->fullSearch) {
             //TODO поменять на preg
