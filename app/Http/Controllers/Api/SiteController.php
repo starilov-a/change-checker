@@ -22,7 +22,7 @@ class SiteController extends Controller
         $start = $request->input('start', 0);
         $limit = $request->input('limit', 20);
 
-        return SiteResource::collection(Site::skip($start)->take($limit)->get());
+        return SiteResource::collection(Site::skip($start)->take($limit)->orderBy('created_at', 'desc')->get());
     }
 
     /**

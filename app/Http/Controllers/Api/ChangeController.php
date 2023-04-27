@@ -27,7 +27,7 @@ class ChangeController extends Controller
         if ($id !== false)
             $changes = $changes->where('site_id', '=' , $id);
 
-        return ChangeResource::collection($changes->get());
+        return ChangeResource::collection($changes->orderBy('created_at', 'desc')->get());
     }
 
     /**
