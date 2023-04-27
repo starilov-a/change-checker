@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\AddSiteContract;
 use App\Models\Site;
 use Illuminate\Http\Request;
 
@@ -27,7 +28,7 @@ class SiteController extends Controller
      */
     public function create()
     {
-        //
+        return view('sites.create');
     }
 
     /**
@@ -36,9 +37,14 @@ class SiteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\SiteStoreRequest $request, AddSiteContract $action)
     {
-        //
+        $urls = explode(',', $request->validated()['urls']);
+
+        $action->addSites($urls);
+
+        return redirect('/sites');
+
     }
 
     /**
@@ -84,5 +90,13 @@ class SiteController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function scan(\App\Http\Requests\ScanSiteRequest $request, \App\Contracts\ScanSiteContract $action)
+    {
+        $id = $request->input('id', false);
+        $action->scanSites($id);
+
+        return redirect('/sites');
     }
 }

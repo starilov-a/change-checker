@@ -22,7 +22,7 @@ class SiteStoreRequest extends ValidateRequest
     public function rules()
     {
         return [
-            'urls' => 'required|array'
+            'urls' => 'required'
         ];
     }
 }

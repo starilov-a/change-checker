@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             $action = new ScanSiteAction;
-            $action->scanSite();
+            $action->scanSites();
         })->everyFourHours();
     }
 
