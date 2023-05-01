@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('auth', 'App\Http\Controllers\AuthController@show')->name('web.auth.show');
-Route::post('auth', 'App\Http\Controllers\AuthController@login')->name('web.auth.login');
+Route::get('auth', 'App\Http\Controllers\Web\AuthController@show')->name('web.auth.show');
+Route::post('auth', 'App\Http\Controllers\Web\AuthController@login')->name('web.auth.login');
 
 Route::group(['middleware' => ['auth:sanctum']], function (){
-    Route::resource('sites', \App\Http\Controllers\SiteController::class)->names('web.sites');
-    Route::post('sites/scan', 'App\Http\Controllers\SiteController@scan')->name('web.sites.scan');
-    Route::resource('changes', \App\Http\Controllers\ChangeController::class)->names('web.changes');
-    Route::get('logout', 'App\Http\Controllers\AuthController@logout')->name('web.auth.logout');
+    Route::resource('sites', \App\Http\Controllers\Web\SiteController::class)->names('web.sites');
+    Route::post('sites/scan', '\App\Http\Controllers\Web\SiteController@scan')->name('web.sites.scan');
+    Route::resource('changes', \App\Http\Controllers\Web\ChangeController::class)->names('web.changes');
+    Route::get('logout', '\App\Http\Controllers\Web\AuthController@logout')->name('web.auth.logout');
 });
 
 

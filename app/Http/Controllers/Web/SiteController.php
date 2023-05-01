@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
 use App\Contracts\AddSiteContract;
+use App\Http\Controllers\Controller;
 use App\Models\Site;
 use Illuminate\Http\Request;
 
@@ -95,7 +96,7 @@ class SiteController extends Controller
     public function scan(\App\Http\Requests\ScanSiteRequest $request, \App\Contracts\ScanSiteContract $action)
     {
         $id = $request->input('id', false);
-        $action->scanSites($id);
+        $action->scanSites(['id' => $id]);
 
         return redirect('/sites');
     }

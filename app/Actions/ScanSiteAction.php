@@ -5,22 +5,26 @@ namespace App\Actions;
 
 
 use App\Contracts\ScanSiteContract;
-use App\Jobs\Scans\ScanSiteIndexJob;
+use App\Jobs\Scans\ScanSiteJob;
 use App\Models\Site;
 
 
 class ScanSiteAction implements ScanSiteContract
 {
-    public function scanSites($siteId = false)
+    /**
+     * Событие добавления сайта в очередь на сканирование страниц
+     *
+     * @return void
+     */
+    public function scanSites($siteData = false)
     {
-        if ($siteId !== false)
-            $sites = collect(Site::where("id", "=", $siteId)->get());
+        if (isset($siteData['id']))
+            $sites = collect([Site::find($siteData['id'])]);
         else
             $sites = Site::all();
 
-        foreach ($sites as $site){
-            //TODO изменить на ScanSiteJob
-            ScanSiteIndexJob::dispatch($site)->onQueue('scan');
+        foreach ($sites->all() as $site){
+            ScanSiteJob::dispatch($site)->onQueue('scansite');
         }
     }
 

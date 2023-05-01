@@ -23,6 +23,7 @@ Route::post('login', 'App\Http\Controllers\Api\AuthController@login')->name('api
 Route::group(['middleware' => ['auth:sanctum']], function (){
     Route::apiResource('sites', SiteController::class)->names('api.sites');
     Route::post('sites/scan', 'App\Http\Controllers\Api\SiteController@scan')->name('api.sites.scan');
+    Route::post('sites/search', 'App\Http\Controllers\Api\SiteController@search')->name('api.sites.search');
 
     Route::apiResource('pages', PageController::class)->names('api.pages');
 

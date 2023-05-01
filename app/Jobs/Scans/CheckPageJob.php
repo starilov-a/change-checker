@@ -3,18 +3,22 @@
 namespace App\Jobs\Scans;
 
 use App\Models\Page;
+use App\Models\Site;
 use App\Services\ParserService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
-class ScanSiteIndexJob implements ShouldQueue
+class CheckPageJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $site;
+    protected $page;
+    public $timeout = 360;
 
     public function uniqueId()
     {
@@ -25,9 +29,10 @@ class ScanSiteIndexJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($site)
+    public function __construct(Site $site, Page $page)
     {
         $this->site = $site;
+        $this->page = $page;
     }
 
     /**
@@ -37,28 +42,28 @@ class ScanSiteIndexJob implements ShouldQueue
      */
     public function handle()
     {
+
         $parser = new ParserService($this->site->url);
-        $mainPage = Page::where('url','=', '/')->where('site_id', '=', $this->site->id)->first();
+        $page = $this->page;
 
         //TODO сделать поиск страницы либо исключить отсутствия страниц
-        if ($mainPage === null)
+        if ($page === null)
             return false;
         //получить вес страницы
-        $size = $mainPage->size;
+        $size = $page->size;
         //сделать запрос и получить еще один вес страницы
-        $newSize = $parser->getSizePage($mainPage->url);
+        $newSize = $parser->getSizePage($page->url);
         //сравнить
         if ($size != $newSize) {
-
             //запись в таблицы
-            $mainPage->size = $newSize;
-            $mainPage->save();
+            $page->size = $newSize;
+            $page->save();
 
             $this->site->changes()->updateOrCreate([
                 'site_id' => $this->site->id,
-                'url' => '/'
+                'url' => $page->url
             ],[
-                'checked' => true
+                'checked' => false
             ]);
         }
     }

@@ -35,7 +35,12 @@
                             {{ $change->sites->url }}
                         </a>
                     </td>
-                    <td><a href="{{ $change->sites->url }}{{ $change->url }}" target="_blank">{{ $change->url }}</a></td>
+                    <td>
+                        <a href="{{ $change->sites->url }}{{ $change->url }}" target="_blank">
+                            @php
+                                echo urldecode($change->url);
+                            @endphp
+                        </a></td>
                     <td>{{ $change->checked }}</td>
                     <td>{{ $change->created_at }}</td>
                 </tr>

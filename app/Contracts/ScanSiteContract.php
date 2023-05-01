@@ -6,5 +6,5 @@ namespace App\Contracts;
 
 interface ScanSiteContract
 {
-    public function scanSites(int $siteId = null);
+    public function scanSites(array $siteData);
 }

@@ -78,8 +78,17 @@ class SiteController extends Controller
     public function scan(\App\Http\Requests\ScanSiteRequest $request, \App\Contracts\ScanSiteContract $action)
     {
         $id = $request->input('id', false);
-        $action->scanSites($id);
+        $action->scanSites(['id' => $id]);
 
         return response(['data' => ['message' => 'Запрос на парсинг сайтов создан']], \Illuminate\Http\Response::HTTP_OK);
+    }
+
+    public function search(\App\Http\Requests\ScanSiteRequest $request, \App\Actions\SearchSitePageAction $action)
+    {
+        $request->validated();
+        $id = $request->input('id', false);
+        $action->searchPages(['id' => $id]);
+
+        return response(['data' => ['message' => 'Запрос на поиск новых страниц создан']], \Illuminate\Http\Response::HTTP_OK);
     }
 }
