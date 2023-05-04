@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use \App\Services\ParserService;
+use Illuminate\Support\Facades\Log;
 
 
 class AddSiteJob implements ShouldQueue, ShouldBeUnique
@@ -42,16 +43,20 @@ class AddSiteJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(SearchSitePageAction $action)
     {
-        if(empty(Site::where('url', $this->url)->first())) {
+        $site = Site::where('url', $this->url)->first();
+        if(empty($site)) {
             $parser = new ParserService($this->url);
             if(!$parser->isError()) {
                 //Добавление сайта
                 $title = $parser->getSiteTitle();
                 $site = Site::create(['name' => $title, 'url' => $this->url]);
-
-                //Поиск и добалвение страниц
-                $action->searchPages($site);
+            } else {
+                return false;
             }
+        }
+        if ($site->page_count == 1) {
+            //Поиск и добалвение страниц
+            $action->searchPages($site);
         }
     }
 }

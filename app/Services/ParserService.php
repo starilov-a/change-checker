@@ -5,6 +5,7 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ParserService
 {
@@ -62,9 +63,16 @@ class ParserService
         $response = $this->doRequest($path);
         $pageUrls[$path] = $this->getSizePage($path);
 
+        if ($response === false)
+            return $pageUrls;
+
         if($this->fullSearch) {
             preg_match_all('/<a.*?href=["\'](.*?)["\'].*?>/i', $response, $matches);
             $paths = $this->formatterLinks($matches[1]);
+
+            //освобождение памяти
+            unset($matches);
+
             foreach ($paths as $path) {
                 if (!isset($pageUrls[$path])) {
                     $pageUrls = $this->searchLinkPage($path, $pageUrls);
@@ -77,18 +85,29 @@ class ParserService
     protected function formatterLinks($docLinks) {
         $links = [];
         foreach ($docLinks as $docLink) {
-            //удаление GET параметров и пробелов
-            $link = explode('?', trim($docLink))[0];
-            //ссылка на текущйи сайт?
-            if ((!isset(parse_url($link)['host']) || strpos($link, $this->siteUrl) !== false) && strpos($link, 'tel:') === false) {
-                //если пустая ссылка, то корневой сайт
-                $link = parse_url($link)['path'] ?? '/';
-                //проверка на формат
-                if (strpos($link, '.') === false || strpos($link, '.php') !== false || strpos($link, '.html') !== false) {
-                    $link = parse_url($link)['path'];
-                    $links[$link] = $link;
-                }
-            }
+            //удаление GET параметров, якорей и пробелов
+            $link = explode('#', explode('?', trim($docLink))[0])[0];
+
+            //в ссылке есть хост и он не является искомым
+            if (isset(parse_url($link)['host']) && strpos($link, $this->siteUrl) === false)
+                continue;
+
+            //оставляем только path
+            $link = !empty(parse_url($link)['path']) ? parse_url($link)['path'] : '/';
+
+            //убираем специальные символы
+            if (strpos($link, './') === 0 &&
+                strpos($link, '../') === 0 &&
+                strpos($link, ';') !== false &&
+                strpos($link, 'tel:') !== false)
+                continue;
+
+            //проверка на формат файла
+            if (strpos($link, '.') !== false &&
+                (strpos($link, '.php') === false || strpos($link, '.html') === false))
+                continue;
+
+            $links[$link] = $link;
         }
         return $links;
     }
