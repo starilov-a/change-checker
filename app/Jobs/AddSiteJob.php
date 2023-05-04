@@ -48,8 +48,7 @@ class AddSiteJob implements ShouldQueue, ShouldBeUnique
             $parser = new ParserService($this->url);
             if(!$parser->isError()) {
                 //Добавление сайта
-                $title = $parser->getSiteTitle();
-                $site = Site::create(['name' => $title, 'url' => $this->url]);
+                $site = Site::create(['name' => $parser->getSiteTitle(), 'url' => $this->url, 'page_count' => 1]);
             } else {
                 return false;
             }

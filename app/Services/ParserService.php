@@ -13,25 +13,25 @@ class ParserService
     use SerializesModels;
 
     protected $client;
-    protected $response;
+    protected $responseError = false;
     protected $fullSearch = true;
+    protected $excludedUrls = [];
     public $siteUrl;
 
     public function __construct($url) {
         $this->siteUrl = str_replace('www.', '', rtrim(parse_url($url)['host']));
         $this->client = new Client(['base_uri' => $this->siteUrl, 'verify' => false]);
-        $this->doRequest();
     }
 
     public function doRequest($path = '', $method = 'GET') {
         //TODO log ошибок
-        $this->response = '';
+        $response = '';
         try {
-            $this->response = mb_convert_encoding($this->client->request($method, $this->siteUrl.$path)->getBody(), "UTF8");
+            $response = mb_convert_encoding($this->client->request($method, $this->siteUrl.$path)->getBody(), "UTF8");
         } catch (TransferException $e) {
-            $this->response = false;
+            $this->responseError = false;
         }
-        return $this->response;
+        return $response;
     }
 
     public function getSitePages() {
@@ -46,25 +46,26 @@ class ParserService
     }
 
     public function isError() {
-        //TODO Доделать логи ошибок
-        if ($this->response == false)
-            return true;
-        return false;
+        return $this->responseError;
     }
 
-    public function getSizePage($path) {
+    public function getSizePage($path, $response = null) {
         $size = 0;
-        $response = $this->doRequest($path);
+        if (!isset($response))
+            $response = $this->doRequest($path);
+
         $size = strlen($response);
         return $size;
     }
 
     protected function searchLinkPage($path, $pageUrls) {
         $response = $this->doRequest($path);
-        $pageUrls[$path] = $this->getSizePage($path);
+        $size = $this->getSizePage($path, $response);
 
-        if ($response === false)
+        if ($this->isError() || $size == 0)
             return $pageUrls;
+
+        $pageUrls[$path] = $size;
 
         if($this->fullSearch) {
             preg_match_all('/<a.*?href=["\'](.*?)["\'].*?>/i', $response, $matches);
@@ -72,6 +73,8 @@ class ParserService
 
             //освобождение памяти
             unset($matches);
+            unset($response);
+            unset($size);
 
             foreach ($paths as $path) {
                 if (!isset($pageUrls[$path])) {
@@ -85,35 +88,63 @@ class ParserService
     protected function formatterLinks($docLinks) {
         $links = [];
         foreach ($docLinks as $docLink) {
-            //удаление GET параметров, якорей и пробелов
-            $link = explode('#', explode('?', trim($docLink))[0])[0];
+            if (!isset($this->excludedUrls[$docLink])) {
+                //удаление GET параметров, якорей и пробелов
+                $link = explode('#', explode('?', trim($docLink))[0])[0];
 
-            //в ссылке есть хост и он не является искомым
-            if (isset(parse_url($link)['host']) && strpos($link, $this->siteUrl) === false)
-                continue;
+                //в ссылке есть хост и он не является искомым
+                if (!isset(parse_url($link)['host']) ||
+                    (isset(parse_url($link)['host']) && strpos($link, $this->siteUrl) !== false)) {
 
-            //оставляем только path
-            $link = !empty(parse_url($link)['path']) ? parse_url($link)['path'] : '/';
+                    //оставляем только path
+                    $link = !empty(parse_url($link)['path']) ? parse_url($link)['path'] : '/';
 
-            //убираем специальные символы
-            if (strpos($link, './') === 0 &&
-                strpos($link, '../') === 0 &&
-                strpos($link, ';') !== false &&
-                strpos($link, 'tel:') !== false)
-                continue;
+                    //убираем специальные символы
+                    if (strpos($link, './') === false &&
+                        strpos($link, '../') === false &&
+                        strpos($link, ';') === false &&
+                        strpos($link, 'tel:') === false &&
+                        strpos($link, 'mailto:') === false ) {
 
-            //проверка на формат файла
-            if (strpos($link, '.') !== false &&
-                (strpos($link, '.php') === false || strpos($link, '.html') === false))
-                continue;
+                        //добалвение первого слеша
+                        if (strpos($link, '/') !== 0)
+                            $link  = '/'.$link;
 
-            $links[$link] = $link;
+                        //пропуск страниц: new, блогов, страниц
+                        preg_match('/\/[0-9]{2,4}\/[0-9]{2}\/[0-9]{2,4}\//', $link, $match);
+                        if (strpos($link, '/news/') === false &&
+                            strpos($link, '/page/') === false &&
+                            strpos($link, '/category/') === false &&
+                            strpos($link, '/author/') === false &&
+                            strpos($link, '/publ/') === false &&
+                            strpos($link, '/load/') === false &&
+                            strpos($link, '/download_file/') === false &&
+                            strpos($link, '/download/') === false &&
+                            strpos($link, '/file/') === false &&
+                            strpos($link, '/image/') === false &&
+                            strpos($link, 'novosti') === false &&
+                            empty($match)) {
+
+                            //проверка на формат файла
+                            if (strpos($link, '.') === false ||
+                                strpos($link, '.php') !== false ||
+                                strpos($link, '.html') !== false) {
+
+                                $links[$link] = $link;
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+            //если не проходит хоть одно условие, то добавляется в исключения
+            $this->excludedUrls[$docLink] = true;
         }
         return $links;
     }
 
     protected function searchTitle() {
-        preg_match('/<title[^>]*?>(.*?)<\/title>/si', $this->response, $matches);
+        preg_match('/<title[^>]*?>(.*?)<\/title>/si', $this->doRequest('/'), $matches);
 
         if (!empty($matches))
             $title = $matches[1];

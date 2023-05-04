@@ -54,7 +54,7 @@ class CheckPageJob implements ShouldQueue
         //сделать запрос и получить еще один вес страницы
         $newSize = $parser->getSizePage($page->url);
         //сравнить
-        if ($size != $newSize) {
+        if (($size - 10) >= $newSize && ($size + 10) <= $newSize) {
             //запись в таблицы
             $page->size = $newSize;
             $page->save();

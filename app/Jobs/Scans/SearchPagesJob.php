@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class SearchPagesJob implements ShouldQueue
 {
@@ -39,6 +40,7 @@ class SearchPagesJob implements ShouldQueue
     public function handle()
     {
         $parser = new ParserService($this->site->url);
+
 
         $pages = $parser->getSitePages();
         $this->site->page_count = count($pages);
