@@ -17,8 +17,8 @@ class AddSiteAction implements AddSiteContract
      */
     public function addSites($urls) {
         foreach ($urls as $url) {
-            $url = 'http://'.parse_url($url)['host'];
-            AddSiteJob::dispatch($url)->onQueue('addsite');
+            $url = parse_url($url)['host'] ?? $url;
+            AddSiteJob::dispatch('http://'.$url)->onQueue('addsite');
         }
     }
 }

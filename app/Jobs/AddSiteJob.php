@@ -53,7 +53,7 @@ class AddSiteJob implements ShouldQueue, ShouldBeUnique
                 return false;
             }
         }
-        if ($site->page_count == 1) {
+        if ($site->page_count <= 1) {
             //Поиск и добалвение страниц
             $action->searchPages($site);
         }

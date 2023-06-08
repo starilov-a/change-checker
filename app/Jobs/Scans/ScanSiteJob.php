@@ -34,8 +34,9 @@ class ScanSiteJob implements ShouldQueue
      */
     public function handle()
     {
-        foreach ($this->site->pages->all() as $page){
-            CheckPageJob::dispatch($this->site, $page)->onQueue('scanpage');
-        }
+        $pages = $this->site->pages->all();
+        if (!empty($pages))
+            foreach ($this->site->pages->all() as $page)
+                CheckPageJob::dispatch($this->site, $page)->onQueue('scanpage');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Change;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ChangeController extends Controller
 {
@@ -16,8 +17,7 @@ class ChangeController extends Controller
     public function index()
     {
         $changes = Change::with('sites')->orderBy('created_at', 'desc')->paginate(20);
-        $countChanges = Change::all()->count();
-
+        $countChanges = DB::table('changes')->count();
         return view('changes.list', compact('changes', 'countChanges'));
     }
 
