@@ -1,88 +1,85 @@
 <?php
 
-namespace App\Services;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\TransferException;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
+namespace App\Services\Parser;
 
-class ParserService
+
+
+
+use App\Jobs\Scans\SearchPagesJob;
+use App\Models\Site;
+use Illuminate\Support\Facades\DB;
+
+class ParserEduService extends ParserService
 {
+    //номер итерации
+    protected $i = 0;
 
-    use SerializesModels;
+    //кол-во иттераций рекурсивного посика(кол-во страниц за раз)
+    protected $countItr = 500;
 
-    protected $client;
-    protected $responseError = false;
+    //домашняя страница либо поиск по всему сайту
     protected $fullSearch = true;
+
+    //исключенные страницы
     protected $excludedUrls = [];
-    public $siteUrl;
 
-    public function __construct($url) {
-        $this->siteUrl = str_replace('www.', '', rtrim(parse_url($url)['host']));
-        $this->client = new Client(['base_uri' => $this->siteUrl, 'verify' => false]);
-    }
+    //Все урлы и веса страниц которые прошел парсер
+    protected $pageUrls = [];
 
-    public function doRequest($path = '', $method = 'GET') {
-        //TODO log ошибок
-        $response = '';
-        try {
-            $response = mb_convert_encoding($this->client->request($method, $this->siteUrl.$path)->getBody(), "UTF8");
-        } catch (TransferException $e) {
-            $this->responseError = false;
-        }
-        return $response;
-    }
-
-    public function getSitePages() {
-        $pages = [];
-        $pageUrls = [];
-        $pages = $this->searchLinkPage('/', $pageUrls);
-        return $pages;
-    }
+    //Все урлы которые пройдет парсер
+    protected $paths = [];
 
     public function getSiteTitle() {
-        return $this->searchTitle();
+        preg_match('/<title[^>]*?>(.*?)<\/title>/si', $this->request('/'), $matches);
+        return !empty($matches) ? $matches[1] : $this->siteUrl;
     }
 
-    public function isError() {
-        return $this->responseError;
+    public function getSizePage($path) {
+        return strlen($this->request($path));
     }
 
-    public function getSizePage($path, $response = null) {
-        $size = 0;
-        if (!isset($response))
-            $response = $this->doRequest($path);
+    public function getSitePages($path = '/', $bufferId = false) {
+        if ($this->isMany()){
+            $this->continueSearch();
+            return $this->pageUrls;
+        }
 
+        $response = $this->request($path);
         $size = strlen($response);
-        return $size;
-    }
 
-    protected function searchLinkPage($path, $pageUrls) {
-        $response = $this->doRequest($path);
-        $size = $this->getSizePage($path, $response);
+        if ($this->isError() || $size === 0)
+            return $this->pageUrls;
 
-        if ($this->isError() || $size == 0)
-            return $pageUrls;
-
-        $pageUrls[$path] = $size;
+        $this->pageUrls[$path] = $size;
 
         if($this->fullSearch) {
-            preg_match_all('/<a.*?href=["\'](.*?)["\'].*?>/i', $response, $matches);
-            $paths = $this->formatterLinks($matches[1]);
+            if ($bufferId === false) {
+                preg_match_all('/<a.*?href=["\'](.*?)["\'].*?>/i', $response, $matches);
+                $paths = $this->formatterLinks($matches[1]);
 
-            //освобождение памяти
-            unset($matches);
-            unset($response);
-            unset($size);
+                //освобождение памяти
+                unset($matches);
+                unset($response);
+                unset($size);
 
-            foreach ($paths as $path) {
-                if (!isset($pageUrls[$path])) {
-                    $pageUrls = $this->searchLinkPage($path, $pageUrls);
-                }
+                //buffer unused
+                foreach ($paths as $path)
+                    if (!isset($this->paths[$path]))
+                        $this->paths[$path] = $path;
+            } else {
+                $this->loadBufferData($bufferId);
+            }
+
+            foreach ($this->paths as $path){
+                if($this->isMany())
+                    return $this->pageUrls;
+
+                if (!isset($this->pageUrls[$path]))
+                    $this->pageUrls = $this->getSitePages($path);
             }
         }
-        return $pageUrls;
+        return $this->pageUrls;
     }
 
     protected function formatterLinks($docLinks) {
@@ -143,15 +140,31 @@ class ParserService
         return $links;
     }
 
-    protected function searchTitle() {
-        preg_match('/<title[^>]*?>(.*?)<\/title>/si', $this->doRequest('/'), $matches);
-
-        if (!empty($matches))
-            $title = $matches[1];
-        else
-            $title = $this->siteUrl;
-
-        return $title;
+    public function isMany() {
+        return $this->i++ >= $this->countItr;
     }
 
+    public function continueSearch() {
+        $bufferId = $this->saveBufferData();
+        SearchPagesJob::dispatch(Site::where('url', $this->siteUrl)->first(), $bufferId)->onQueue('searchpage');
+    }
+
+    protected function saveBufferData() {
+        $data = json_encode([
+            'pageUrls' => $this->pageUrls,
+            'paths' => $this->paths,
+            'excludedUrls' => $this->excludedUrls
+        ]);
+
+        return DB::table('parser_page_buffer')->insertGetId(['data' => $data]);
+    }
+
+    protected function loadBufferData($bufferId) {
+        $data = DB::table('parser_page_buffer')->find($bufferId);
+        //удаляем из бд
+//        DB::table('parser_page_buffer')::where('id', $bufferId)->delete();
+        $this->paths = $data['path'];
+        $this->excludedUrls = $data['excludedUrls'];
+        $this->pageUrls = $data['pageUrls'];
+    }
 }

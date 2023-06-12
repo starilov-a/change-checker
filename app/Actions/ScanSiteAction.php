@@ -16,8 +16,7 @@ class ScanSiteAction implements ScanSiteContract
      *
      * @return void
      */
-    public function scanSites($siteData = false)
-    {
+    public function scanSites($siteData = []) {
         if (isset($siteData['id']))
             $sites = collect([Site::find($siteData['id'])]);
         else

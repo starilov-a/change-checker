@@ -6,8 +6,6 @@ use App\Contracts\AddSiteContract;
 use App\Http\Resources\SiteResource;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
-use \App\Services\ParserService;
-use Facade\FlareClient\Http\Response;
 use Illuminate\Http\Request;
 
 class SiteController extends Controller

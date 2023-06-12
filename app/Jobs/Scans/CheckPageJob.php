@@ -4,13 +4,12 @@ namespace App\Jobs\Scans;
 
 use App\Models\Page;
 use App\Models\Site;
-use App\Services\ParserService;
+use App\Services\Parser\ParserEduService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class CheckPageJob implements ShouldQueue
 {
@@ -43,7 +42,7 @@ class CheckPageJob implements ShouldQueue
     public function handle()
     {
 
-        $parser = new ParserService($this->site->url);
+        $parser = new ParserEduService($this->site->url);
         $page = $this->page;
 
         //TODO сделать поиск страницы либо исключить отсутствия страниц

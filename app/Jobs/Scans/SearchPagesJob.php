@@ -3,7 +3,7 @@
 namespace App\Jobs\Scans;
 
 use App\Models\Site;
-use App\Services\ParserService;
+use App\Services\Parser\ParserEduService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,6 +16,7 @@ class SearchPagesJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $site;
+    protected $bufferId;
     public $timeout = 4800;
 
     public function uniqueId()
@@ -27,9 +28,10 @@ class SearchPagesJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Site $site)
+    public function __construct(Site $site, $bufferId = false)
     {
         $this->site = $site;
+        $this->bufferId = $bufferId;
     }
 
     /**
@@ -39,10 +41,9 @@ class SearchPagesJob implements ShouldQueue
      */
     public function handle()
     {
-        $parser = new ParserService($this->site->url);
+        $parser = new ParserEduService($this->site->url);
+        $pages = $parser->getSitePages('/', $this->bufferId);
 
-
-        $pages = $parser->getSitePages();
         $this->site->page_count = count($pages);
         $this->site->save();
 
