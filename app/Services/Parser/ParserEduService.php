@@ -160,7 +160,7 @@ class ParserEduService extends ParserService
     }
 
     protected function loadBufferData($bufferId) {
-        $data = DB::table('parser_page_buffer')->find($bufferId);
+        $data = json_decode(DB::table('parser_page_buffer')->find($bufferId)->data);
         //удаляем из бд
 //        DB::table('parser_page_buffer')::where('id', $bufferId)->delete();
         $this->paths = $data['path'];
