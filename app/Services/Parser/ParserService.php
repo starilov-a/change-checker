@@ -15,8 +15,10 @@ abstract class ParserService
     protected $client;
     protected $responseError = false;
     protected $siteUrl;
+    protected $fullSiteUrl;
 
     public function __construct($url) {
+        $this->fullSiteUrl = $url;
         $this->siteUrl = $this->indexFormatter($url);
         $this->client = new Client(['base_uri' => $this->siteUrl, 'verify' => false]);
     }

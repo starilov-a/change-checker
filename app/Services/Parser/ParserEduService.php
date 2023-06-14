@@ -7,7 +7,6 @@ namespace App\Services\Parser;
 
 
 use App\Jobs\Scans\SearchPagesJob;
-use App\Models\Site;
 use Illuminate\Support\Facades\DB;
 
 class ParserEduService extends ParserService
@@ -16,7 +15,7 @@ class ParserEduService extends ParserService
     protected $i = 0;
 
     //кол-во иттераций рекурсивного посика(кол-во страниц за раз)
-    protected $countItr = 500;
+    protected $countItr = 2500;
 
     //домашняя страница либо поиск по всему сайту
     protected $fullSearch = true;
@@ -30,6 +29,14 @@ class ParserEduService extends ParserService
     //Все урлы которые пройдет парсер
     protected $paths = [];
 
+    //site
+    protected $site;
+
+    public function __construct($url, $site = null) {
+        parent::__construct($url);
+        $this->site = $site;
+    }
+
     public function getSiteTitle() {
         preg_match('/<title[^>]*?>(.*?)<\/title>/si', $this->request('/'), $matches);
         return !empty($matches) ? $matches[1] : $this->siteUrl;
@@ -40,6 +47,7 @@ class ParserEduService extends ParserService
     }
 
     public function getSitePages($path = '/', $bufferId = false) {
+        $this->i++;
         if ($this->isMany()){
             $this->continueSearch();
             return $this->pageUrls;
@@ -109,17 +117,17 @@ class ParserEduService extends ParserService
 
                         //пропуск страниц: new, блогов, страниц
                         preg_match('/\/[0-9]{2,4}\/[0-9]{2}\/[0-9]{2,4}\//', $link, $match);
-                        if (strpos($link, '/news/') === false &&
-                            strpos($link, '/page/') === false &&
-                            strpos($link, '/category/') === false &&
-                            strpos($link, '/author/') === false &&
-                            strpos($link, '/publ/') === false &&
+                        if (//strpos($link, '/news/') === false &&
+                            //strpos($link, '/page/') === false &&
+                            //strpos($link, '/category/') === false &&
+                            //strpos($link, '/author/') === false &&
+                            //strpos($link, '/publ/') === false &&
                             strpos($link, '/load/') === false &&
                             strpos($link, '/download_file/') === false &&
                             strpos($link, '/download/') === false &&
                             strpos($link, '/file/') === false &&
                             strpos($link, '/image/') === false &&
-                            strpos($link, 'novosti') === false &&
+                            //strpos($link, 'novosti') === false &&
                             empty($match)) {
 
                             //проверка на формат файла
@@ -141,16 +149,17 @@ class ParserEduService extends ParserService
     }
 
     public function isMany() {
-        return $this->i++ >= $this->countItr;
+        return $this->i >= $this->countItr;
     }
 
     public function continueSearch() {
         $bufferId = $this->saveBufferData();
-        SearchPagesJob::dispatch(Site::where('url', $this->siteUrl)->first(), $bufferId)->onQueue('searchpage');
+        SearchPagesJob::dispatch($this->site, $bufferId)->onQueue('searchpage');
     }
 
     protected function saveBufferData() {
         $data = json_encode([
+            'siteUrl' => $this->siteUrl,
             'pageUrls' => $this->pageUrls,
             'paths' => $this->paths,
             'excludedUrls' => $this->excludedUrls
@@ -161,10 +170,9 @@ class ParserEduService extends ParserService
 
     protected function loadBufferData($bufferId) {
         $data = json_decode(DB::table('parser_page_buffer')->find($bufferId)->data);
-        //удаляем из бд
-//        DB::table('parser_page_buffer')::where('id', $bufferId)->delete();
-        $this->paths = $data['path'];
-        $this->excludedUrls = $data['excludedUrls'];
-        $this->pageUrls = $data['pageUrls'];
+        DB::table('parser_page_buffer')->delete($bufferId);
+        $this->paths = (array) $data->paths;
+        $this->excludedUrls = (array) $data->excludedUrls;
+        $this->pageUrls = (array) $data->pageUrls;
     }
 }

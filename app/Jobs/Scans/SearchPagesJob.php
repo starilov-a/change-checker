@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class SearchPagesJob implements ShouldQueue
 {
@@ -21,7 +20,7 @@ class SearchPagesJob implements ShouldQueue
 
     public function uniqueId()
     {
-        return $this->site->url;
+        return $this->site->url.$this->bufferId;
     }
     /**
      * Create a new job instance.
@@ -41,7 +40,7 @@ class SearchPagesJob implements ShouldQueue
      */
     public function handle()
     {
-        $parser = new ParserEduService($this->site->url);
+        $parser = new ParserEduService($this->site->url, $this->site);
         $pages = $parser->getSitePages('/', $this->bufferId);
 
         $this->site->page_count = count($pages);

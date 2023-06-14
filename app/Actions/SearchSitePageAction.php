@@ -15,10 +15,10 @@ class SearchSitePageAction
      *
      * @return void
      */
-    public function searchPages($siteData) {
+    public function searchPages(Site $site = null) {
 
-        if (isset($siteData['id']))
-            $sites = collect([Site::find($siteData['id'])]);
+        if (isset($site))
+            $sites = collect([$site]);
         else
             $sites = Site::all();
 

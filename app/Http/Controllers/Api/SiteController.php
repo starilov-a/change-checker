@@ -85,7 +85,7 @@ class SiteController extends Controller
     {
         $request->validated();
         $id = $request->input('id', false);
-        $action->searchPages(['id' => $id]);
+        $action->searchPages(Site::find($id));
 
         return response(['data' => ['message' => 'Запрос на поиск новых страниц создан']], \Illuminate\Http\Response::HTTP_OK);
     }
