@@ -38,10 +38,17 @@
                 <td>{{ $site->page_count }}</td>
                 <td>{{ $site->created_at }}</td>
                 <td>
+                    <form action="/sites/searchpage" method="post">
+                        @csrf
+                        <input hidden name="id" value="{{ $site->id }}">
+                        <input type="submit" class="btn btn-primary" value="Поиск новых страниц">
+                    </form>
+                </td>
+                <td>
                     <form action="/sites/scan" method="post">
                         @csrf
                         <input hidden name="id" value="{{ $site->id }}">
-                        <input type="submit" class="btn btn-primary" value="Сканировать">
+                        <input type="submit" class="btn btn-primary" value="Поиск изменений">
                     </form>
                 </td>
                 <td>

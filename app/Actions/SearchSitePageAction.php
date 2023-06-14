@@ -15,15 +15,15 @@ class SearchSitePageAction
      *
      * @return void
      */
-    public function searchPages(Site $site = null) {
-
+    public function searchPages(Site $site = null, $high = false) {
+        $queueName = $high === false ? 'searchpage' : 'searchpagehigh';
         if (isset($site))
             $sites = collect([$site]);
         else
             $sites = Site::all();
 
         foreach ($sites->all() as $site){
-            SearchPagesJob::dispatch($site)->onQueue('searchpage');
+            SearchPagesJob::dispatch($site)->onQueue($queueName);
         }
     }
 }

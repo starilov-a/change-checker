@@ -100,4 +100,12 @@ class SiteController extends Controller
 
         return redirect('/sites');
     }
+
+    public function search(\App\Http\Requests\ScanSiteRequest $request, \App\Actions\SearchSitePageAction $action)
+    {
+        $id = $request->input('id', false);
+        $action->searchPages(Site::find($id), true);
+
+        return redirect('/sites');
+    }
 }
