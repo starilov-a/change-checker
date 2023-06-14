@@ -18,7 +18,7 @@ Route::post('auth', 'App\Http\Controllers\Web\AuthController@login')->name('web.
 Route::group(['middleware' => ['auth:sanctum']], function (){
     Route::resource('sites', \App\Http\Controllers\Web\SiteController::class)->names('web.sites');
     Route::post('sites/scan', '\App\Http\Controllers\Web\SiteController@scan')->name('web.sites.scan');
-    Route::post('sites/searchpage', '\App\Http\Controllers\Web\SiteController@search')->name('web.sites.search');
+    Route::post('sites/searchpage', '\App\Http\Controllers\Web\SiteController@searchpage')->name('web.sites.searchpage');
     Route::resource('changes', \App\Http\Controllers\Web\ChangeController::class)->names('web.changes');
     Route::get('logout', '\App\Http\Controllers\Web\AuthController@logout')->name('web.auth.logout');
 });
