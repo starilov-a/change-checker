@@ -108,4 +108,12 @@ class SiteController extends Controller
 
         return redirect('/sites');
     }
+
+    public function searchsite(\App\Http\Requests\SiteSearchRequest $request) {
+        $url = $request->input('field', false);
+
+        $sites = Site::where('url', 'LIKE', '%'.$url.'%')->paginate(20);
+        $countSites = Site::where('url', 'LIKE', '%'.$url.'%')->count();
+        return view('sites.list', compact('sites', 'countSites'));
+    }
 }

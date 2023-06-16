@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Change;
+use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,9 +17,9 @@ class ChangeController extends Controller
      */
     public function index()
     {
-        $changes = Change::with('sites')->orderBy('created_at', 'desc')->paginate(20);
-        $countChanges = DB::table('changes')->count();
-        return view('changes.list', compact('changes', 'countChanges'));
+        $sites = Site::has('changes')->paginate(20);
+        $countSites = Site::has('changes')->get()->count();
+        return view('changes.sites', compact('sites', 'countSites'));
     }
 
     /**
@@ -48,9 +49,11 @@ class ChangeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Site $site)
     {
-        //
+        $changes = Change::with('sites')->where('site_id',$site->id)->orderBy('created_at', 'desc')->paginate(20);
+        $countChanges = DB::table('changes')->where('site_id',$site->id)->count();
+        return view('changes.list', compact('changes', 'countChanges'));
     }
 
     /**
@@ -85,5 +88,13 @@ class ChangeController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function searchchangesite(\App\Http\Requests\SiteSearchRequest $request) {
+        $url = $request->input('field', false);
+
+        $sites = Site::has('changes')->where('url', 'LIKE', '%'.$url.'%')->paginate(20);
+        $countSites = Site::has('changes')->where('url', 'LIKE', '%'.$url.'%')->count();
+        return view('changes.sites', compact('sites', 'countSites'));
     }
 }
