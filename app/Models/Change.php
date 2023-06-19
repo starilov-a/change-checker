@@ -14,13 +14,27 @@ class Change extends Model
         'updated_at',
     ];
 
-    protected $fillable = ['checked', 'url'];
+    protected $fillable = ['site_id', 'page_id'];
 
     /**
-     * Получение всех site в которых есть изменения
+     * Связь `changes` с таблицей `sites`
+     */
+    public function site() {
+        return $this->belongsTo(Site::class, 'site_id');
+    }
+
+    /**
+     * Связь `changes` с таблицей `sites`
+     */
+    public function page() {
+        return $this->belongsTo(Page::class, 'page_id');
+    }
+
+    /**
+     * Получение всех sit+e в которых есть изменения
      */
     static function changedSites() {
-        $changesBySite = Change::with('sites')->where('checked', '=', '0')->groupBy('site_id')->get();
+        $changesBySite = Change::with('site')->groupBy('site_id')->get();
 
         $sites = [];
         foreach ($changesBySite as $change)
@@ -30,9 +44,12 @@ class Change extends Model
     }
 
     /**
-     * Связь `changes` с таблицей `sites`
+     * Добалвение в историю изменений
      */
-    public function sites() {
-        return $this->belongsTo(Site::class, 'site_id');
+    public function addInHistory() {
+        $historyChange = HistoryChange::create(['site_id' => $this->site_id, 'page_id' => $this->page_id]);
+        $this->delete();
+
+        return $historyChange;
     }
 }

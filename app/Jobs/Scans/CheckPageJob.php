@@ -61,9 +61,7 @@ class CheckPageJob implements ShouldQueue
 
             $this->site->changes()->updateOrCreate([
                 'site_id' => $this->site->id,
-                'url' => $page->url
-            ],[
-                'checked' => false
+                'page_id' => $page->id
             ]);
         }
     }

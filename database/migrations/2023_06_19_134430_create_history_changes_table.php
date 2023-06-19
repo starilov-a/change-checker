@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateChangesTable extends Migration
+class CreateHistoryChangesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateChangesTable extends Migration
      */
     public function up()
     {
-        Schema::create('changes', function (Blueprint $table) {
+        Schema::create('history_changes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('site_id');
             $table->unsignedBigInteger('page_id');
@@ -30,6 +30,6 @@ class CreateChangesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('changes');
+        Schema::dropIfExists('history_changes');
     }
 }

@@ -23,26 +23,26 @@
             <tr>
                 <th scope="col">Сайт</th>
                 <th scope="col">Url</th>
-                <th scope="col">Проверено</th>
                 <th scope="col">Дата добавления</th>
+                <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
             @foreach ($changes as $change)
                 <tr>
-                    <td title="{{$change->sites->name}}">
-                        <a href="{{ $change->sites->url }}" target="_blank">
-                            {{ $change->sites->url }}
+                    <td title="{{$change->site->name}}">
+                        <a href="{{ $change->site->url }}" target="_blank">
+                            {{ $change->site->url }}
                         </a>
                     </td>
                     <td>
-                        <a href="{{ $change->sites->url }}{{ $change->url }}" target="_blank">
+                        <a href="{{ $change->site->url }}{{ $change->url }}" target="_blank">
                             @php
-                                echo urldecode($change->url);
+                                echo urldecode($change->page->url);
                             @endphp
                         </a></td>
-                    <td>{{ $change->checked }}</td>
                     <td>{{ $change->created_at }}</td>
+                    <td><a href="/changes/addinhistory/{{ $change->id }}" class="btn btn-primary btn-sm">Проверено</a></td>
                 </tr>
             @endforeach
             </tbody>

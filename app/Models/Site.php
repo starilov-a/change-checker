@@ -35,9 +35,16 @@ class Site extends Model
     }
 
     /**
-     * Связь `sites` с таблицей `change`
+     * Связь `sites` с таблицей `excluded_pages`
      */
     public function excludedPages() {
         return $this->hasMany(ExcludedPage::class);
+    }
+
+    /**
+     * Связь `sites` с таблицей `excluded_pages`
+     */
+    public function historychanges() {
+        return $this->hasMany(HistoryChange::class);
     }
 }

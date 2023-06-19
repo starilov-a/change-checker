@@ -5,32 +5,28 @@
         <div class="btn-toolbar mb-2 mb-md-0">
         </div>
     </div>
-    <h2>Сайты с исключенными страницами - {{ $countSites }}</h2>
+    <h2>История по сайту
+        {{ $pages[0]->site->url }} - {{ $countPages }}
+    </h2>
     <div class="table-responsive">
-        {{ $sites->links()}}
+        {{ $pages->links()}}
         <table class="table table-striped table-sm">
             <thead>
             <tr>
-                <th scope="col">Название</th>
                 <th scope="col">Url</th>
                 <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
-            @foreach ($sites as $site)
+            @foreach ($pages as $page)
                 <tr>
-                    <td title="{{$site->name}}">
-                        @php
-                            echo (mb_strlen($site->name) > 60 ? mb_substr($site->name, 0, 60)."..." : $site->name);
-                        @endphp
-                    </td>
-                    <td title="{{$site->name}}">
-                        <a href="{{ $site->url }}" target="_blank">
-                            {{ $site->url }}
+                    <td title="{{$page->url}}">
+                        <a href="{{ $page->site->url }}{{ $page->url }}" target="_blank">
+                            {{ $page->url }}
                         </a>
                     </td>
                     <td>
-                        <a href="/excludedpages/{{ $site->id }}" class="btn btn-primary btn-sm">Подробнее</a>
+                        <a href="/historychanges/page/{{ $page->id }}" class="btn btn-primary btn-sm">Список изменений</a>
                     </td>
                 </tr>
             @endforeach

@@ -14,6 +14,8 @@ class Page extends Model
         'updated_at',
     ];
 
+    protected $fillable = ['site_id', 'url', 'size', 'created_at'];
+
     static public function withoutExcluded($siteId = false) {
         if ($siteId === false)
             return self::doesnthave('excludedPage');
@@ -28,7 +30,6 @@ class Page extends Model
             return self::where('site_id', '=' , $siteId)->has('excludedPage');
     }
 
-    protected $fillable = ['site_id', 'url', 'size', 'created_at'];
     /**
      * Связь `pages` с таблицей `sites`
      */
@@ -36,7 +37,17 @@ class Page extends Model
         return $this->belongsTo(Site::class);
     }
 
+    /**
+     * Связь `pages` с таблицей `excluded_pages`
+     */
     public function excludedPage() {
         return $this->hasOne(ExcludedPage::class);
+    }
+
+    /**
+     * Связь `pages` с таблицей `history_changes`
+     */
+    public function historyChanges() {
+        return $this->hasMany(HistoryChange::class);
     }
 }

@@ -5,7 +5,7 @@
         <div class="btn-toolbar mb-2 mb-md-0">
         </div>
     </div>
-    <h2>Сайты с исключенными страницами - {{ $countSites }}</h2>
+    <h2>Сайты со страницыми в истории - {{ $countSites }}</h2>
     <div class="table-responsive">
         {{ $sites->links()}}
         <table class="table table-striped table-sm">
@@ -30,7 +30,7 @@
                         </a>
                     </td>
                     <td>
-                        <a href="/excludedpages/{{ $site->id }}" class="btn btn-primary btn-sm">Подробнее</a>
+                        <a href="/historychanges/site/{{ $site->id }}" class="btn btn-primary btn-sm">Страницы</a>
                     </td>
                 </tr>
             @endforeach
