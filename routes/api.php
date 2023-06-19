@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SiteController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\ChangeController;
+use App\Http\Controllers\Api\ExcludedPageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,10 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
     Route::post('sites/search', 'App\Http\Controllers\Api\SiteController@search')->name('api.sites.search');
 
     Route::apiResource('pages', PageController::class)->names('api.pages');
+
+    Route::get('excludedpages', 'App\Http\Controllers\Api\ExcludedPageController@index')->name('api.excludedpages.index');
+    Route::post('excludedpages', 'App\Http\Controllers\Api\ExcludedPageController@store')->name('api.excludedpages.store');
+    Route::delete('excludedpages', 'App\Http\Controllers\Api\ExcludedPageController@destroy')->name('api.excludedpages.destroy');
 
     Route::apiResource('changes', ChangeController::class)->names('api.changes');
 

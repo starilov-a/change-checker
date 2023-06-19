@@ -24,7 +24,10 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
 
     Route::get('changes/', '\App\Http\Controllers\Web\ChangeController@index')->name('web.changes.index');
     Route::post('changes/searchsite', '\App\Http\Controllers\Web\ChangeController@searchchangesite')->name('web.changes.searchsite');
-    Route::post('changes/{site}', '\App\Http\Controllers\Web\ChangeController@show')->name('web.changes.show');
+    Route::get('changes/{site}', '\App\Http\Controllers\Web\ChangeController@show')->name('web.changes.show');
+
+    Route::get('excludedpages/', 'App\Http\Controllers\Web\ExcludedPageController@index')->name('web.excludedpages.index');
+    Route::get('excludedpages/{site}', '\App\Http\Controllers\Web\ExcludedPageController@show')->name('web.excludedpages.show');
 
     Route::get('logout', '\App\Http\Controllers\Web\AuthController@logout')->name('web.auth.logout');
 });

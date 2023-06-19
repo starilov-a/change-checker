@@ -18,8 +18,8 @@ class PageController extends Controller
     public function index(\App\Http\Requests\ListRequest $request)
     {
         $start = $request->input('start', 0);
-        $limit = $request->input('limit', 20);
-        return PageResource::collection(Page::where('site_id', '=' , $request->id)->skip($start)->take($limit)->get());
+        $limit = $request->input('limit', 100);
+        return PageResource::collection(Page::withoutExcluded($request->id)->skip($start)->take($limit)->get());
     }
 
     /**

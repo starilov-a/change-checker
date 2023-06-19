@@ -11,6 +11,11 @@
                     Зафиксированные изменения
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/excludedpages">
+                    Исключенные страницы
+                </a>
+            </li>
         </ul>
     </div>
 </nav>

@@ -14,15 +14,29 @@ class Page extends Model
         'updated_at',
     ];
 
+    static public function withoutExcluded($siteId = false) {
+        if ($siteId === false)
+            return self::doesnthave('excludedPage');
+        else
+            return self::where('site_id', '=' , $siteId)->doesnthave('excludedPage');
+    }
+
+    static public function onlyExcluded($siteId = false) {
+        if ($siteId === false)
+            return self::has('excludedPage');
+        else
+            return self::where('site_id', '=' , $siteId)->has('excludedPage');
+    }
+
     protected $fillable = ['site_id', 'url', 'size', 'created_at'];
     /**
      * Связь `pages` с таблицей `sites`
      */
-    public function sites() {
+    public function site() {
         return $this->belongsTo(Site::class);
     }
 
-    public function addPage($param) {
-        return $this->create($param);
+    public function excludedPage() {
+        return $this->hasOne(ExcludedPage::class);
     }
 }

@@ -33,4 +33,11 @@ class Site extends Model
     public function changes() {
         return $this->hasMany(Change::class);
     }
+
+    /**
+     * Связь `sites` с таблицей `change`
+     */
+    public function excludedPages() {
+        return $this->hasMany(ExcludedPage::class);
+    }
 }
