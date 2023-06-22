@@ -14,7 +14,7 @@ class Page extends Model
         'updated_at',
     ];
 
-    protected $fillable = ['site_id', 'url', 'size', 'created_at'];
+    protected $fillable = ['site_id', 'url', 'size', 'created_at', 'status_code'];
 
     static public function withoutExcluded($siteId = false) {
         if ($siteId === false)

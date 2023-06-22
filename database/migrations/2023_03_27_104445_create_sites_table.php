@@ -18,6 +18,7 @@ class CreateSitesTable extends Migration
             $table->string('name');
             $table->string('url');
             $table->integer('page_count')->default(1);
+            $table->integer('status_code');
             $table->softDeletes();
             $table->timestamps();
         });

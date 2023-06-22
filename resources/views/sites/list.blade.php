@@ -20,10 +20,12 @@
     <table class="table table-striped table-sm">
         <thead>
         <tr>
+            <th scope="col">Статус</th>
             <th scope="col">Название</th>
             <th scope="col">Url</th>
             <th scope="col">Кол-во страниц</th>
             <th scope="col">Дата добавления</th>
+            <th scope="col"></th>
             <th scope="col"></th>
             <th scope="col"></th>
         </tr>
@@ -31,6 +33,11 @@
         <tbody>
         @foreach ($sites as $site)
             <tr>
+                <td>
+                    @php
+                        echo ($site->status_code === 0 ? "~" : $site->status_code);
+                    @endphp
+                </td>
                 <td title="{{$site->name}}">
                     @php
                         echo (mb_strlen($site->name) > 60 ? mb_substr($site->name, 0, 60)."..." : $site->name);
@@ -38,6 +45,7 @@
                 </td>
                 <td><a href="{{ $site->url }}" target="_blank">{{ $site->url }}</a></td>
                 <td>{{ $site->page_count }}</td>
+
                 <td>{{ $site->created_at }}</td>
                 <td>
                     <form action="/sites/searchpage" method="post">
@@ -53,11 +61,11 @@
                         <input type="submit" class="btn btn-primary btn-sm" value="Поиск изменений">
                     </form>
                 </td>
-{{--                <td>--}}
-{{--                    <form action="/sites/{{ $site->id }}" method="delete">--}}
-{{--                        <input type="submit" class="btn btn-danger btn-sm" value="Удалить">--}}
-{{--                    </form>--}}
-{{--                </td>--}}
+                <td>
+                    <form action="sites/checkstatus/{{ $site->id }}" method="get">
+                        <input type="submit" class="btn btn-primary btn-sm" value="Обновить статус">
+                    </form>
+                </td>
             </tr>
         @endforeach
         </tbody>

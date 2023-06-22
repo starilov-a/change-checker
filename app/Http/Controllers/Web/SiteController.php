@@ -116,4 +116,9 @@ class SiteController extends Controller
         $countSites = Site::where('url', 'LIKE', '%'.$url.'%')->count();
         return view('sites.list', compact('sites', 'countSites'));
     }
+
+    public function checkstatus(Site $site, \App\Actions\StatusSiteAction $action) {
+        $action->checkSiteStatus($site);
+        return redirect('/sites');
+    }
 }

@@ -46,12 +46,13 @@ class SearchPagesJob implements ShouldQueue
         $this->site->page_count = count($pages);
         $this->site->save();
 
-        foreach ($pages as $path => $size) {
+        foreach ($pages as $path => $page) {
             $this->site->pages()->firstOrCreate([
                 'site_id' => $this->site->id,
                 'url' => $path
             ],[
-                'size' => $size,
+                'size' => $page['size'],
+                'status_code' => $page['statusCode']
             ]);
         }
     }

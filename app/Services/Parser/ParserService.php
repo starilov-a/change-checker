@@ -2,10 +2,9 @@
 
 namespace App\Services\Parser;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\TransferException;
+use App\Services\GuzzleMonitor\MonitorClient;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 abstract class ParserService
 {
@@ -14,21 +13,22 @@ abstract class ParserService
 
     protected $client;
     protected $responseError = false;
+    protected $responseCode;
     protected $siteUrl;
     protected $fullSiteUrl;
 
     public function __construct($url) {
         $this->fullSiteUrl = $url;
         $this->siteUrl = $this->indexFormatter($url);
-        $this->client = new Client(['base_uri' => $this->siteUrl, 'verify' => false]);
+        $this->client = new MonitorClient(['base_uri' => $this->siteUrl, 'verify' => false]);
     }
 
-    public function request($path = '', $method = 'GET') {
-        //TODO log ошибок
+    public function request($path = '', $method = 'GET', $opt = []) {
         $response = '';
-        try {
-            $response = mb_convert_encoding($this->client->request($method, $this->siteUrl.$path)->getBody(), "UTF8");
-        } catch (TransferException $e) {
+        try{
+            $response = $this->client->request($method, $this->siteUrl.$path, $opt);
+        } catch (ConnectException $e) {
+            $this->responseCode = 504;
             $this->responseError = false;
         }
         return $response;

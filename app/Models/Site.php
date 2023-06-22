@@ -11,7 +11,7 @@ class Site extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name', 'url', 'page_count'];
+    protected $fillable = ['name', 'url', 'page_count', 'status_code'];
 
     /**
      * Атрибуты, которые должны быть преобразованы в дату

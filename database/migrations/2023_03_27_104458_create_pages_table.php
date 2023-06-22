@@ -19,6 +19,7 @@ class CreatePagesTable extends Migration
             $table->foreign('site_id')->references('id')->on('sites')->onDelete('cascade');
             $table->string('url');
             $table->integer('size');
+            $table->integer('status_code');
             $table->timestamps();
         });
     }
