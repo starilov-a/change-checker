@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PageUpdateRequest extends FormRequest
+class PaginationRequest extends ValidateRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,8 @@ class PageUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|max:255',
-            'url' => 'string'
+            'start' => 'int',
+            'limit' => 'int'
         ];
     }
 }

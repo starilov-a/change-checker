@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
     Route::apiResource('pages', PageController::class)->names('api.pages');
 
     Route::get('excludedpages', 'App\Http\Controllers\Api\ExcludedPageController@index')->name('api.excludedpages.index');
+    Route::get('excludedpages/sites/', 'App\Http\Controllers\Api\ExcludedPageController@indexsite')->name('api.excludedpages.indexsite');
     Route::post('excludedpages', 'App\Http\Controllers\Api\ExcludedPageController@store')->name('api.excludedpages.store');
     Route::delete('excludedpages', 'App\Http\Controllers\Api\ExcludedPageController@destroy')->name('api.excludedpages.destroy');
 

@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request,
-    App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class HistoryChangeController extends Controller
 {

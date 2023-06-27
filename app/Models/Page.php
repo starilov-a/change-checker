@@ -17,14 +17,14 @@ class Page extends Model
     protected $fillable = ['site_id', 'url', 'size', 'created_at', 'status_code'];
 
     static public function withoutExcluded($siteId = false) {
-        if ($siteId === false)
+        if ($siteId === false || $siteId === null)
             return self::doesnthave('excludedPage');
         else
             return self::where('site_id', '=' , $siteId)->doesnthave('excludedPage');
     }
 
     static public function onlyExcluded($siteId = false) {
-        if ($siteId === false)
+        if ($siteId === false || $siteId === null)
             return self::has('excludedPage');
         else
             return self::where('site_id', '=' , $siteId)->has('excludedPage');

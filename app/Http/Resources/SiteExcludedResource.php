@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ChangeResource extends JsonResource
+class SiteExcludedResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,7 +16,9 @@ class ChangeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'page_id' => $this->page_id,
+            'name' => $this->name,
+            'url' => $this->url,
+            'page_count' => $this->excludedPages()->get()->count(),
         ];
     }
 }
