@@ -65,12 +65,12 @@ class ParserEduService extends ParserService
 
         $response = $this->request($path);
 
+        if ($this->isError())
+            return $this->pageUrls;
+
         $body = $response->getBody();
         $status = $response->getStatusCode();
         $size = strlen($body);
-
-        if ($this->isError() || $size === 0)
-            return $this->pageUrls;
 
         $this->pageUrls[$path]['size'] = $size;
         $this->pageUrls[$path]['statusCode'] = $status;

@@ -3,8 +3,9 @@
 namespace App\Services\Parser;
 
 use App\Services\GuzzleMonitor\MonitorClient;
-use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\TransferException;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 abstract class ParserService
 {
@@ -27,9 +28,9 @@ abstract class ParserService
         $response = '';
         try{
             $response = $this->client->request($method, $this->siteUrl.$path, $opt);
-        } catch (ConnectException $e) {
+        } catch (TransferException $e) {
             $this->responseCode = 504;
-            $this->responseError = false;
+            $this->responseError = true;
         }
         return $response;
     }
