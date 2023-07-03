@@ -109,7 +109,13 @@ class ParserEduService extends ParserService
         foreach ($docLinks as $docLink) {
             if (!isset($this->excludedUrls[$docLink])) {
                 //удаление GET параметров, якорей и пробелов
-                $link = explode('#', explode('?', trim($docLink))[0])[0];
+                // page_id, cat, p
+                $link = (strpos($docLink, '?page_id=') === 1) ?
+                    explode('&', $docLink)[0] :
+                    explode('?', trim($docLink))[0];
+                $link = explode('#', $link)[0];
+
+
 
                 //в ссылке есть хост и он не является искомым
                 if (!isset(parse_url($link)['host']) ||
@@ -147,6 +153,7 @@ class ParserEduService extends ParserService
                             //проверка на формат файла
                             if (strpos($link, '.') === false ||
                                 strpos($link, '.php') !== false ||
+                                strpos($link, '.htm') !== false ||
                                 strpos($link, '.html') !== false) {
 
                                 $links[$link] = $link;
