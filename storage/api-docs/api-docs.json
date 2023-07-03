@@ -1,0 +1,1263 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Monitor",
+        "contact": {
+            "name": "Glassen_IT"
+        },
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://62.113.103.54/api",
+            "description": "API Monitor"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Регестрация нового пользователя",
+                "operationId": "5d4fa5d5607ed675ba93907e1fc94534",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "login": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "login": "user1",
+                                    "password": "password1",
+                                    "email": "example@gmail.com",
+                                    "role": "0|1|2"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "login": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "role": {
+                                            "type": "string"
+                                        },
+                                        "updated_at": {
+                                            "type": "string"
+                                        },
+                                        "created_at": {
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "login": "testmanager",
+                                        "email": "testexample@mail.ru",
+                                        "role": "2",
+                                        "updated_at": "2023-06-26T11:06:30.000000Z",
+                                        "created_at": "2023-06-26T11:06:30.000000Z",
+                                        "id": 4
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Неверные входные значения",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult422"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Аутентификация пользователя",
+                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "login": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "login": "user1",
+                                    "password": "password1"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "login": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    },
+                                                    "role": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": [
+                                                {
+                                                    "login": "admin",
+                                                    "email": "anton_starilov@mail.ru",
+                                                    "role": "1"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Неверный логин или пароль",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult422"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Аутентификация пользователя",
+                "operationId": "c2ef43513fcaf9bcfcbf8d36b3b0d679",
+                "responses": {
+                    "204": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/changes": {
+            "get": {
+                "tags": [
+                    "changes"
+                ],
+                "summary": "Список изменений",
+                "operationId": "c1f9db1c0685e7c6640d2902a7894754",
+                "parameters": [
+                    {
+                        "name": "site_id",
+                        "in": "query",
+                        "description": "Id сайта(если не указывать, то прийдет всё)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    },
+                    {
+                        "name": "start(0)",
+                        "in": "query",
+                        "description": "Отсчет для пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    },
+                    {
+                        "name": "limit(20)",
+                        "in": "query",
+                        "description": "Лимит пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "page_id": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": [
+                                                {
+                                                    "id": 5762,
+                                                    "page_id": 1234
+                                                },
+                                                {
+                                                    "id": "...",
+                                                    "page_id": "..."
+                                                }
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "count": {
+                                                        "type": "integer"
+                                                    },
+                                                    "start": {
+                                                        "type": "integer"
+                                                    },
+                                                    "limit": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": {
+                                                "count": 10000,
+                                                "start": 0,
+                                                "limit": 20
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/excludedpages": {
+            "get": {
+                "tags": [
+                    "excludedpages"
+                ],
+                "summary": "Список исключений",
+                "operationId": "18a52116e749967f5ee3502c70ac789e",
+                "parameters": [
+                    {
+                        "name": "site_id",
+                        "in": "query",
+                        "description": "Id сайта(если не указывать, то прийдет всё)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    },
+                    {
+                        "name": "start(0)",
+                        "in": "query",
+                        "description": "Отсчет для пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    },
+                    {
+                        "name": "limit(20)",
+                        "in": "query",
+                        "description": "Лимит пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "page_id": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": [
+                                                {
+                                                    "id": 5762,
+                                                    "page_id": 1234
+                                                },
+                                                {
+                                                    "id": "...",
+                                                    "page_id": "..."
+                                                }
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "count": {
+                                                        "type": "integer"
+                                                    },
+                                                    "start": {
+                                                        "type": "integer"
+                                                    },
+                                                    "limit": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": {
+                                                "count": 10000,
+                                                "start": 0,
+                                                "limit": 20
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "excludedpages"
+                ],
+                "summary": "Добавление страницы в исключение",
+                "operationId": "10a727f360e2d264aac77e71b640b90e",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "page_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "page_id": 123
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "example": {
+                                                "message": "Страница добавлена в исключения"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/excludedpages/sites": {
+            "get": {
+                "tags": [
+                    "excludedpages"
+                ],
+                "summary": "Список исключенных сайтов",
+                "operationId": "9a669b0b49c18d2b3b791058c79f0ab5",
+                "parameters": [
+                    {
+                        "name": "start(0)",
+                        "in": "query",
+                        "description": "Отсчет для пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    },
+                    {
+                        "name": "limit(20)",
+                        "in": "query",
+                        "description": "Лимит пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "page_count": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": [
+                                                {
+                                                    "id": 5762,
+                                                    "name": 1234,
+                                                    "url": 1234,
+                                                    "page_count": 1234
+                                                },
+                                                {
+                                                    "id": "...",
+                                                    "name": "...",
+                                                    "url": "...",
+                                                    "page_count": "..."
+                                                }
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "count": {
+                                                        "type": "integer"
+                                                    },
+                                                    "start": {
+                                                        "type": "integer"
+                                                    },
+                                                    "limit": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": {
+                                                "count": 10000,
+                                                "start": 0,
+                                                "limit": 20
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pages": {
+            "get": {
+                "tags": [
+                    "pages"
+                ],
+                "summary": "Список страниц",
+                "operationId": "be285396fe3a2c5171e59e42660abcc8",
+                "parameters": [
+                    {
+                        "name": "site_id",
+                        "in": "query",
+                        "description": "Id сайта(если не указывать, то прийдет всё)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    },
+                    {
+                        "name": "start(0)",
+                        "in": "query",
+                        "description": "Отсчет для пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    },
+                    {
+                        "name": "limit(20)",
+                        "in": "query",
+                        "description": "Лимит пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "size": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": [
+                                                {
+                                                    "id": 637347,
+                                                    "url": "/",
+                                                    "size": 1323
+                                                },
+                                                {
+                                                    "id": "...",
+                                                    "url": "...",
+                                                    "size": "..."
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pages/{page_id}": {
+            "delete": {
+                "tags": [
+                    "pages"
+                ],
+                "summary": "Удаленеи страницы",
+                "operationId": "5db3d1b3831ad101d2fc0c442e89d55e",
+                "responses": {
+                    "204": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "pages"
+                ],
+                "summary": "Редактирование страницы",
+                "operationId": "5caa69e2760c1bb3cbdc4ec9bbf91daa",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "url": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "url": "/newurl"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sites": {
+            "get": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Список сайтов",
+                "operationId": "25a759f5d65767a3c78bcbc5a9de2c7f",
+                "parameters": [
+                    {
+                        "name": "start(0)",
+                        "in": "query",
+                        "description": "Отсчет для пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    },
+                    {
+                        "name": "limit(20)",
+                        "in": "query",
+                        "description": "Лимит пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "page_count": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": [
+                                                {
+                                                    "id": 5762,
+                                                    "name": "ExampleSite",
+                                                    "url": "examplesite.com",
+                                                    "page_count": 99
+                                                },
+                                                {
+                                                    "id": "...",
+                                                    "name": "...",
+                                                    "url": "...",
+                                                    "page_count": "..."
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Добавлените сайтов",
+                "operationId": "73917f8e0c43d619d5a89ccb29c37044",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "urls": {
+                                        "example": [
+                                            "site1.com",
+                                            "site2.com",
+                                            "..."
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "example": {
+                                                "message": "Запрос на добавление и парсинг сайтов создан"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sites/{site_id}": {
+            "get": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Получение сайта с его страницами",
+                "operationId": "07ce28414fb852675eac1afceabc1264",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "page_count": {
+                                                        "type": "integer"
+                                                    },
+                                                    "pages": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "url": {
+                                                                    "type": "string"
+                                                                },
+                                                                "size": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "example": [
+                                                            {
+                                                                "id": 637347,
+                                                                "url": "/",
+                                                                "size": 1323
+                                                            },
+                                                            {
+                                                                "id": "...",
+                                                                "url": "...",
+                                                                "size": "..."
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": [
+                                                {
+                                                    "id": 5762,
+                                                    "name": "ExampleSite",
+                                                    "url": "examplesite.com",
+                                                    "page_count": 99,
+                                                    "pages": [
+                                                        {
+                                                            "id": 637347,
+                                                            "url": "/",
+                                                            "size": 1323
+                                                        },
+                                                        {
+                                                            "id": "...",
+                                                            "url": "...",
+                                                            "size": "..."
+                                                        }
+                                                    ]
+                                                },
+                                                "..."
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Удаленеи страницы",
+                "operationId": "4f6417d42b0906b5cbff69ac46f29922",
+                "responses": {
+                    "204": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Редактирование сайта",
+                "operationId": "ea097366c14177b161973246e3e8fbf6",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "url": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "url": "/newurl",
+                                    "name": "newSiteName"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "type": "string"
+                                                    },
+                                                    "page_count": {
+                                                        "type": "integer"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": [
+                                                {
+                                                    "id": 5762,
+                                                    "name": "ExampleSite",
+                                                    "url": "examplesite.com",
+                                                    "page_count": 99
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sites/scan": {
+            "post": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Полное сканирование сраниц(ы)",
+                "operationId": "eec104f4b928b077eadd1f70356d68cb",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id": "123"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "example": {
+                                                "message": "Запрос на парсинг сайтов создан"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sites/search": {
+            "post": {
+                "tags": [
+                    "sites"
+                ],
+                "summary": "Поиск новых страниц",
+                "operationId": "bf9c66a4b01807cd56e5c8296cc7a520",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id": "123"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "example": {
+                                                "message": "Запрос на поиск новых страниц создан"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ErrorResult422": {
+                "title": "Шаблон ошибки",
+                "properties": {
+                    "code": {
+                        "type": "integer"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "example": {
+                    "code": 422,
+                    "message": "Неверные входные значения"
+                }
+            },
+            "ErrorResult401": {
+                "title": "Шаблон ошибки статуса авторизации",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "example": {
+                    "message": "Unauthenticated."
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "auth",
+            "description": "Авторизация"
+        },
+        {
+            "name": "changes",
+            "description": "Зафиксированные зименения"
+        },
+        {
+            "name": "excludedpages",
+            "description": "Исключенные страницы"
+        },
+        {
+            "name": "pages",
+            "description": "Страницы"
+        },
+        {
+            "name": "sites",
+            "description": "Сайты"
+        }
+    ]
+}
