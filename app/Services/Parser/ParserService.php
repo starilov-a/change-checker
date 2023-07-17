@@ -5,7 +5,6 @@ namespace App\Services\Parser;
 use App\Services\GuzzleMonitor\MonitorClient;
 use GuzzleHttp\Exception\TransferException;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 abstract class ParserService
 {
@@ -16,10 +15,8 @@ abstract class ParserService
     protected $responseError = false;
     protected $responseCode;
     protected $siteUrl;
-    protected $fullSiteUrl;
 
     public function __construct($url) {
-        $this->fullSiteUrl = $url;
         $this->siteUrl = $this->indexFormatter($url);
         $this->client = new MonitorClient(['base_uri' => $this->siteUrl, 'verify' => false]);
     }

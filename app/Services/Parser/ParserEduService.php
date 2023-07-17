@@ -18,9 +18,6 @@ class ParserEduService extends ParserService
     //кол-во иттераций рекурсивного посика(кол-во страниц за раз)
     protected $countItr = 2500;
 
-    //домашняя страница либо поиск по всему сайту
-    protected $fullSearch = true;
-
     //исключенные страницы
     protected $excludedUrls = [];
 
@@ -57,50 +54,48 @@ class ParserEduService extends ParserService
     }
 
     public function getSitePages($path = '/', $bufferId = false) {
-        $this->i++;
-        if ($this->isMany()){
-            $this->continueSearch();
-            return $this->pageUrls;
-        }
-
-        $response = $this->request($path);
-
-        if ($this->isError())
-            return $this->pageUrls;
-
-        $body = $response->getBody();
-        $status = $response->getStatusCode();
-        $size = strlen($body);
-
-        $this->pageUrls[$path]['size'] = $size;
-        $this->pageUrls[$path]['statusCode'] = $status;
-
-        if($this->fullSearch) {
-            if ($bufferId === false) {
-                preg_match_all('/<a.*?href=["\'](.*?)["\'].*?>/i', $body, $matches);
-                $paths = $this->formatterLinks($matches[1]);
-
-                //освобождение памяти
-                unset($matches);
-                unset($body);
-                unset($size);
-
-                //buffer unused
-                foreach ($paths as $path)
-                    if (!isset($this->paths[$path]))
-                        $this->paths[$path] = $path;
-            } else {
-                $this->loadBufferData($bufferId);
+        if ($bufferId === false) {
+            $this->i++;
+            if ($this->isMany()){
+                $this->continueSearch();
+                return $this->pageUrls;
             }
 
-            foreach ($this->paths as $path){
-                if($this->isMany())
-                    return $this->pageUrls;
+            $response = $this->request($path);
+            if ($this->isError())
+                return $this->pageUrls;
 
-                if (!isset($this->pageUrls[$path]))
-                    $this->pageUrls = $this->getSitePages($path);
-            }
+            $body = $response->getBody();
+            $status = $response->getStatusCode();
+            $size = strlen($body);
+
+            $this->pageUrls[$path]['size'] = $size;
+            $this->pageUrls[$path]['statusCode'] = $status;
+
+            preg_match_all('/<a.*?href=["\'](.*?)["\'].*?>/i', $body, $matches);
+            $paths = $this->formatterLinks($matches[1]);
+
+            //освобождение памяти
+            unset($matches);
+            unset($body);
+            unset($size);
+
+            //buffer unused
+            foreach ($paths as $path)
+                if (!isset($this->paths[$path]))
+                    $this->paths[$path] = $path;
+        } else {
+            $this->loadBufferData($bufferId);
         }
+
+        foreach ($this->paths as $path){
+            if($this->isMany())
+                return $this->pageUrls;
+
+            if (!isset($this->pageUrls[$path]))
+                $this->pageUrls = $this->getSitePages($path);
+        }
+
         return $this->pageUrls;
     }
 
@@ -108,28 +103,36 @@ class ParserEduService extends ParserService
         $links = [];
         foreach ($docLinks as $docLink) {
             if (!isset($this->excludedUrls[$docLink])) {
-                //удаление GET параметров, якорей и пробелов
-                // page_id, cat, p
-                $link = (strpos($docLink, '?page_id=') === 1) ?
-                    explode('&', $docLink)[0] :
-                    explode('?', trim($docLink))[0];
-                $link = explode('#', $link)[0];
 
+                //есть ли урл в полученной сслыке
+                $UrlInLink = strpos($docLink, $this->siteUrl) !== false;
 
-
+                if (strpos($docLink, 'https://') === false && strpos($docLink, 'http://') && $UrlInLink)
+                    $docLink = 'http://'.$docLink;
+                $linkBits= parse_url($docLink);
                 //в ссылке есть хост и он не является искомым
-                if (!isset(parse_url($link)['host']) ||
-                    (isset(parse_url($link)['host']) && strpos($link, $this->siteUrl) !== false)) {
+                if (!isset($linkBits['host']) ||
+                    (isset($linkBits['host']) && $UrlInLink)
+                ) {
+                    if(empty($linkBits['path']))
+                        $linkBits['path'] = '/';
 
+                    //удаление GET параметров, якорей и пробелов
                     //оставляем только path
-                    $link = !empty(parse_url($link)['path']) ? parse_url($link)['path'] : '/';
-
+                    if (!empty($linkBits['query'])) {
+                        $link = $linkBits['path'] . '?' . $linkBits['query'];
+                        $link = (strpos($link, '?page_id=') === 1 || strpos($link, '?p=') === 1) ?
+                            explode('&', $link)[0] :
+                            $linkBits['path'];
+                    } else {
+                        $link = $linkBits['path'];
+                    }
                     //убираем специальные символы
                     if (strpos($link, './') === false &&
                         strpos($link, '../') === false &&
                         strpos($link, ';') === false &&
-                        strpos($link, 'tel:') === false &&
-                        strpos($link, 'mailto:') === false ) {
+                        strpos($docLink, 'tel:') === false &&
+                        strpos($docLink, 'mailto:') === false ) {
 
                         //добалвение первого слеша
                         if (strpos($link, '/') !== 0)
@@ -186,7 +189,11 @@ class ParserEduService extends ParserService
             'excludedUrls' => $this->excludedUrls
         ]);
 
-        return DB::table('parser_page_buffer')->insertGetId(['data' => $data]);
+        return DB::table('parser_page_buffer')->insertGetId([
+            'data' => $data,
+            "created_at" =>  \Carbon\Carbon::now(),
+            "updated_at" => \Carbon\Carbon::now(),
+        ]);
     }
 
     protected function loadBufferData($bufferId) {
