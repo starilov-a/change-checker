@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use \App\Services\Parser\ParserEduService;
+use Illuminate\Support\Facades\Log;
 
 
 class AddSiteJob implements ShouldQueue, ShouldBeUnique
@@ -45,12 +46,9 @@ class AddSiteJob implements ShouldQueue, ShouldBeUnique
         $site = Site::where('url', $this->url)->first();
         if(empty($site)) {
             $parser = new ParserEduService($this->url);
-            if(!$parser->isError()) {
-                //Добавление сайта
-                $site = Site::create(['name' => $parser->getSiteTitle(), 'url' => $this->url, 'page_count' => 1, 'code_status' => $parser->getSiteStatus()]);
-            } else {
-                return false;
-            }
+            //Добавление сайта
+            $site = Site::create(['name' => $parser->getSiteTitle(), 'url' => $this->url, 'page_count' => 0, 'code_status' => $parser->getSiteStatus()]);
+
         }
         if ($site->page_count <= 1) {
             //Поиск и добалвение страниц

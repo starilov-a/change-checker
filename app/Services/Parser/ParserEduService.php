@@ -7,6 +7,7 @@ namespace App\Services\Parser;
 
 
 use App\Jobs\Scans\SearchPagesJob;
+use App\Models\Site;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -30,27 +31,18 @@ class ParserEduService extends ParserService
     //site
     protected $site;
 
-    public function __construct($url, $site = null) {
-        parent::__construct($url);
-        $this->site = $site;
-    }
-
     public function getSiteStatus($path = '/') {
-        $response = $this->request($path, 'GET', ['connect_timeout' => 5, 'http_errors' => false]);
-        if (!empty($response))
-            $code = $response->getStatusCode();
-        else
-            $code = $this->responseCode;
-        return $code;
+        $response = $this->parse($path);
+        return $response->getStatusCode();
     }
 
     public function getSiteTitle() {
-        preg_match('/<title[^>]*?>(.*?)<\/title>/si', $this->request('/')->getBody(), $matches);
+        preg_match('/<title[^>]*?>(.*?)<\/title>/si', $this->parse('/')->getBody(), $matches);
         return !empty($matches) ? $matches[1] : $this->siteUrl;
     }
 
     public function getSizePage($path) {
-        return strlen($this->request($path)->getBody());
+        return strlen($this->parse($path)->getBody());
     }
 
     public function getSitePages($path = '/', $bufferId = false) {
@@ -60,8 +52,8 @@ class ParserEduService extends ParserService
                 $this->continueSearch();
                 return $this->pageUrls;
             }
+            $response = $this->parse($path);
 
-            $response = $this->request($path);
             if ($this->isError())
                 return $this->pageUrls;
 
@@ -72,8 +64,9 @@ class ParserEduService extends ParserService
             $this->pageUrls[$path]['size'] = $size;
             $this->pageUrls[$path]['statusCode'] = $status;
 
-            preg_match_all('/<a.*?href=["\'](.*?)["\'].*?>/i', $body, $matches);
+            preg_match_all('/<a[\W|.*?]href=["\']{0,1}(.*?)["\']{0,1}[\W|.*?]*?>/i', $body, $matches);
             $paths = $this->formatterLinks($matches[1]);
+
 
             //освобождение памяти
             unset($matches);
@@ -178,7 +171,7 @@ class ParserEduService extends ParserService
 
     public function continueSearch() {
         $bufferId = $this->saveBufferData();
-        SearchPagesJob::dispatch($this->site, $bufferId)->onQueue('searchpage');
+        SearchPagesJob::dispatch(Site::where('url', $this->origUrl)->first(), $bufferId)->onQueue('searchpage');
     }
 
     protected function saveBufferData() {

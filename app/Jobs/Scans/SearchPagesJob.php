@@ -40,7 +40,7 @@ class SearchPagesJob implements ShouldQueue
      */
     public function handle()
     {
-        $parser = new ParserEduService($this->site->url, $this->site);
+        $parser = new ParserEduService($this->site->url);
         $pages = $parser->getSitePages('/', $this->bufferId);
 
         $this->site->page_count = count($pages);
